@@ -7,3 +7,10 @@ export interface Book {
   mediatype: string;
   coverUrl?: string;
 }
+
+export interface PaginatedResponse {
+  books: Book[];
+  totalResults: number;
+  currentPage: number;
+  totalPages: number;
+}
