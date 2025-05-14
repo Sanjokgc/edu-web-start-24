@@ -1,21 +1,12 @@
+
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
 import { fetchBooks } from "@/services/resourcesApi";
 import { Book, PaginatedResponse } from "@/types/book";
-import BookList from "@/components/resources/BookList";
 import BookDetail from "@/components/resources/BookDetail";
-import SearchBar from "@/components/resources/SearchBar";
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious,
-  PaginationEllipsis
-} from "@/components/ui/pagination";
+import ResourceListView from "@/components/resources/ResourceListView";
 
 const Resources = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -61,89 +52,6 @@ const Resources = () => {
     window.scrollTo(0, 0); // Scroll to top when changing pages
   };
   
-  // Generate pagination links
-  const renderPaginationLinks = () => {
-    const { totalPages, currentPage: activePage } = paginatedData;
-    
-    // If we have 7 or fewer pages, show all links
-    if (totalPages <= 7) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-        <PaginationItem key={page}>
-          <PaginationLink 
-            onClick={() => handlePageChange(page)} 
-            isActive={page === activePage}
-          >
-            {page}
-          </PaginationLink>
-        </PaginationItem>
-      ));
-    }
-    
-    // For more than 7 pages, show a condensed version with ellipsis
-    const items = [];
-    
-    // Always show first page
-    items.push(
-      <PaginationItem key={1}>
-        <PaginationLink 
-          onClick={() => handlePageChange(1)} 
-          isActive={1 === activePage}
-        >
-          1
-        </PaginationLink>
-      </PaginationItem>
-    );
-    
-    // Add ellipsis if active page is > 3
-    if (activePage > 3) {
-      items.push(
-        <PaginationItem key="ellipsis-1">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-    
-    // Add pages around the active page
-    const startPage = Math.max(2, activePage - 1);
-    const endPage = Math.min(totalPages - 1, activePage + 1);
-    
-    for (let i = startPage; i <= endPage; i++) {
-      items.push(
-        <PaginationItem key={i}>
-          <PaginationLink 
-            onClick={() => handlePageChange(i)} 
-            isActive={i === activePage}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-    
-    // Add ellipsis if active page is < totalPages - 2
-    if (activePage < totalPages - 2) {
-      items.push(
-        <PaginationItem key="ellipsis-2">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-    
-    // Always show last page
-    items.push(
-      <PaginationItem key={totalPages}>
-        <PaginationLink 
-          onClick={() => handlePageChange(totalPages)} 
-          isActive={totalPages === activePage}
-        >
-          {totalPages}
-        </PaginationLink>
-      </PaginationItem>
-    );
-    
-    return items;
-  };
-  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -153,55 +61,17 @@ const Resources = () => {
           // Book Detail View
           <BookDetail book={selectedBook} onBack={handleBackToList} />
         ) : (
-          // Book List View
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold font-display mb-6">Educational Resources</h1>
-            <p className="text-lg text-gray-600 mb-8">
-              Explore our collection of free educational resources from the Internet Archive.
-              These books and documents are available to read directly on our platform.
-            </p>
-            
-            <SearchBar 
-              searchTerm={searchTerm}
-              onSearchTermChange={setSearchTerm}
-              onSearch={handleSearch}
-            />
-            
-            <BookList 
-              books={paginatedData.books}
-              isLoading={isLoading}
-              error={error as Error | null}
-              onSelectBook={handleSelectBook}
-            />
-            
-            {/* Pagination Controls */}
-            {!isLoading && paginatedData.totalPages > 1 && (
-              <Pagination className="my-8">
-                <PaginationContent>
-                  {/* Previous Page Button */}
-                  {paginatedData.currentPage > 1 && (
-                    <PaginationItem>
-                      <PaginationPrevious 
-                        onClick={() => handlePageChange(paginatedData.currentPage - 1)} 
-                      />
-                    </PaginationItem>
-                  )}
-                  
-                  {/* Page Numbers */}
-                  {renderPaginationLinks()}
-                  
-                  {/* Next Page Button */}
-                  {paginatedData.currentPage < paginatedData.totalPages && (
-                    <PaginationItem>
-                      <PaginationNext 
-                        onClick={() => handlePageChange(paginatedData.currentPage + 1)} 
-                      />
-                    </PaginationItem>
-                  )}
-                </PaginationContent>
-              </Pagination>
-            )}
-          </div>
+          // Book List View with Search & Pagination
+          <ResourceListView
+            searchTerm={searchTerm}
+            onSearchTermChange={setSearchTerm}
+            onSearch={handleSearch}
+            paginatedData={paginatedData}
+            isLoading={isLoading}
+            error={error as Error | null}
+            onSelectBook={handleSelectBook}
+            onPageChange={handlePageChange}
+          />
         )}
       </div>
       
