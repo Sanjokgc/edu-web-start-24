@@ -1,7 +1,8 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Book } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,18 +16,22 @@ const Navbar = () => {
         
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-8">
-          <a href="#" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
+          <Link to="/" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
             Home
-          </a>
-          <a href="#courses" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
+          </Link>
+          <Link to="#courses" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
             Courses
-          </a>
-          <a href="#features" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
+          </Link>
+          <Link to="#features" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
             Features
-          </a>
-          <a href="#testimonials" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
+          </Link>
+          <Link to="#testimonials" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
             Testimonials
-          </a>
+          </Link>
+          <Link to="/resources" className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2">
+            <Book size={18} />
+            Resources
+          </Link>
           <Button className="bg-education-blue hover:bg-blue-700 text-white">
             Get Started
           </Button>
@@ -47,13 +52,13 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white py-4 px-4 animate-fade-in">
           <div className="flex flex-col space-y-4">
-            <a 
-              href="#" 
+            <Link 
+              to="/" 
               className="text-gray-700 hover:text-education-blue font-medium transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Home
-            </a>
+            </Link>
             <a 
               href="#courses" 
               className="text-gray-700 hover:text-education-blue font-medium transition-colors"
@@ -75,6 +80,14 @@ const Navbar = () => {
             >
               Testimonials
             </a>
+            <Link 
+              to="/resources" 
+              className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <Book size={18} />
+              Resources
+            </Link>
             <Button className="bg-education-blue hover:bg-blue-700 text-white w-full">
               Get Started
             </Button>
