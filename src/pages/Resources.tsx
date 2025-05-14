@@ -67,7 +67,7 @@ const Resources = () => {
     queryKey: ["books", searchTerm],
     queryFn: fetchBooks,
     staleTime: 1800000, // 30 minutes to reduce API calls
-    cacheTime: 3600000, // 1 hour cache
+    gcTime: 3600000, // 1 hour cache (renamed from cacheTime)
     retry: 1,
   });
 
