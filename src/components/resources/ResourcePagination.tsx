@@ -1,15 +1,15 @@
 
 import React from "react";
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious,
-  PaginationEllipsis
-} from "@/components/ui/pagination";
 import { PaginatedResponse } from "@/types/book";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface ResourcePaginationProps {
   paginatedData: PaginatedResponse;
@@ -17,116 +17,78 @@ interface ResourcePaginationProps {
 }
 
 const ResourcePagination = ({ paginatedData, onPageChange }: ResourcePaginationProps) => {
-  if (paginatedData.totalPages <= 1) {
+  const { currentPage, totalPages } = paginatedData;
+  
+  // Don't show pagination if there's only one page or no pages
+  if (totalPages <= 1) {
     return null;
   }
   
-  const { totalPages, currentPage: activePage } = paginatedData;
-  
-  // Generate pagination links
-  const renderPaginationLinks = () => {
-    // If we have 7 or fewer pages, show all links
-    if (totalPages <= 7) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-        <PaginationItem key={page}>
-          <PaginationLink 
-            onClick={() => onPageChange(page)} 
-            isActive={page === activePage}
-          >
-            {page}
-          </PaginationLink>
-        </PaginationItem>
-      ));
+  // Function to determine which page numbers to show
+  const getPageNumbers = () => {
+    const pages = [];
+    
+    // Always show the first page
+    pages.push(1);
+    
+    // Calculate the range of pages to show around current page
+    let startPage = Math.max(2, currentPage - 1);
+    let endPage = Math.min(totalPages - 1, currentPage + 1);
+    
+    // Add ellipsis indicator if needed at start
+    if (startPage > 2) {
+      pages.push("ellipsis-start");
     }
     
-    // For more than 7 pages, show a condensed version with ellipsis
-    const items = [];
-    
-    // Always show first page
-    items.push(
-      <PaginationItem key={1}>
-        <PaginationLink 
-          onClick={() => onPageChange(1)} 
-          isActive={1 === activePage}
-        >
-          1
-        </PaginationLink>
-      </PaginationItem>
-    );
-    
-    // Add ellipsis if active page is > 3
-    if (activePage > 3) {
-      items.push(
-        <PaginationItem key="ellipsis-1">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-    
-    // Add pages around the active page
-    const startPage = Math.max(2, activePage - 1);
-    const endPage = Math.min(totalPages - 1, activePage + 1);
-    
+    // Add pages in the middle
     for (let i = startPage; i <= endPage; i++) {
-      items.push(
-        <PaginationItem key={i}>
-          <PaginationLink 
-            onClick={() => onPageChange(i)} 
-            isActive={i === activePage}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
+      pages.push(i);
     }
     
-    // Add ellipsis if active page is < totalPages - 2
-    if (activePage < totalPages - 2) {
-      items.push(
-        <PaginationItem key="ellipsis-2">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
+    // Add ellipsis indicator if needed at end
+    if (endPage < totalPages - 1) {
+      pages.push("ellipsis-end");
     }
     
-    // Always show last page
-    items.push(
-      <PaginationItem key={totalPages}>
-        <PaginationLink 
-          onClick={() => onPageChange(totalPages)} 
-          isActive={totalPages === activePage}
-        >
-          {totalPages}
-        </PaginationLink>
-      </PaginationItem>
-    );
+    // Always show the last page if there's more than one page
+    if (totalPages > 1) {
+      pages.push(totalPages);
+    }
     
-    return items;
+    return pages;
   };
-
+  
   return (
     <Pagination className="my-8">
       <PaginationContent>
-        {/* Previous Page Button */}
-        {activePage > 1 && (
-          <PaginationItem>
-            <PaginationPrevious 
-              onClick={() => onPageChange(activePage - 1)} 
-            />
-          </PaginationItem>
-        )}
+        <PaginationItem>
+          <PaginationPrevious
+            onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
+            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+          />
+        </PaginationItem>
         
-        {/* Page Numbers */}
-        {renderPaginationLinks()}
-        
-        {/* Next Page Button */}
-        {activePage < totalPages && (
-          <PaginationItem>
-            <PaginationNext 
-              onClick={() => onPageChange(activePage + 1)} 
-            />
+        {getPageNumbers().map((pageNumber, index) => (
+          <PaginationItem key={index}>
+            {pageNumber === "ellipsis-start" || pageNumber === "ellipsis-end" ? (
+              <PaginationEllipsis />
+            ) : (
+              <PaginationLink
+                isActive={currentPage === pageNumber}
+                onClick={() => onPageChange(Number(pageNumber))}
+              >
+                {pageNumber}
+              </PaginationLink>
+            )}
           </PaginationItem>
-        )}
+        ))}
+        
+        <PaginationItem>
+          <PaginationNext
+            onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
+            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+          />
+        </PaginationItem>
       </PaginationContent>
     </Pagination>
   );

@@ -37,11 +37,11 @@ const BookDetail = ({ book, onBack }: BookDetailProps) => {
         </Button>
       </div>
       
-      {/* Responsive book reader that adapts to screen size */}
+      {/* Text-only book reader that adapts to screen size */}
       <div className="w-full flex-grow mb-6">
         <div className="relative w-full h-[calc(100vh-240px)] md:h-[calc(100vh-280px)]">
           <iframe
-            src={`https://archive.org/embed/${book.identifier}?ui=embed`}
+            src={`https://archive.org/embed/${book.identifier}?ui=embed&view=TextOnly`}
             width="100%"
             height="100%"
             frameBorder="0"
