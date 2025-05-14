@@ -4,6 +4,7 @@ import { Book } from "@/types/book";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, X, BookOpen } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface BookDetailProps {
   book: Book;
@@ -11,6 +12,8 @@ interface BookDetailProps {
 }
 
 const BookDetail = ({ book, onBack }: BookDetailProps) => {
+  const isMobile = useIsMobile();
+  
   return (
     <div className="flex flex-col h-full">
       <div className="flex justify-between items-center mb-4">
@@ -34,18 +37,20 @@ const BookDetail = ({ book, onBack }: BookDetailProps) => {
         </Button>
       </div>
       
-      {/* Expanded reader that fills available width */}
-      <div className="w-full h-[calc(100vh-300px)] mb-6">
-        <iframe
-          src={`https://archive.org/embed/${book.identifier}?ui=embed`}
-          width="100%"
-          height="100%"
-          frameBorder="0"
-          allowFullScreen
-          title="Book Reader"
-          className="rounded-lg shadow-md"
-          loading="eager" // Force eager loading for faster rendering
-        ></iframe>
+      {/* Responsive book reader that adapts to screen size */}
+      <div className="w-full flex-grow mb-6">
+        <div className="relative w-full h-[calc(100vh-240px)] md:h-[calc(100vh-280px)]">
+          <iframe
+            src={`https://archive.org/embed/${book.identifier}?ui=embed`}
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            allowFullScreen
+            title="Book Reader"
+            className="rounded-lg shadow-md absolute top-0 left-0 w-full h-full"
+            loading="eager"
+          ></iframe>
+        </div>
       </div>
       
       {/* Book details below the frame */}
