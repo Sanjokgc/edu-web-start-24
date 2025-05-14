@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -14,7 +13,8 @@ import {
   PaginationItem, 
   PaginationLink, 
   PaginationNext, 
-  PaginationPrevious 
+  PaginationPrevious,
+  PaginationEllipsis
 } from "@/components/ui/pagination";
 
 const Resources = () => {
@@ -98,7 +98,7 @@ const Resources = () => {
     if (activePage > 3) {
       items.push(
         <PaginationItem key="ellipsis-1">
-          <PaginationLink disabled>...</PaginationLink>
+          <PaginationEllipsis />
         </PaginationItem>
       );
     }
@@ -124,7 +124,7 @@ const Resources = () => {
     if (activePage < totalPages - 2) {
       items.push(
         <PaginationItem key="ellipsis-2">
-          <PaginationLink disabled>...</PaginationLink>
+          <PaginationEllipsis />
         </PaginationItem>
       );
     }
