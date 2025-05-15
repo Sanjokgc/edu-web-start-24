@@ -14,8 +14,8 @@ type PostType = {
   upvotes: number;
   downvotes: number;
   comments: CommentType[];
-  upvotedBy?: string[];
-  downvotedBy?: string[];
+  upvotedBy: string[];  // Changed from optional to required
+  downvotedBy: string[]; // Changed from optional to required
 };
 
 type CommentType = {
@@ -39,7 +39,7 @@ export const PostList = () => {
         const parsedPosts = savedPosts ? JSON.parse(savedPosts) : [];
         
         // Normalize posts to ensure all have required fields
-        const normalizedPosts = parsedPosts.map((post: PostType) => ({
+        const normalizedPosts = parsedPosts.map((post: any) => ({  // Changed type from PostType to any to avoid type conflicts during mapping
           ...post,
           upvotedBy: post.upvotedBy || [],
           downvotedBy: post.downvotedBy || [],
