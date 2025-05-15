@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Photo, Video, CalendarCheck, Smile, BarChart, Video as Live } from "lucide-react";
+import { Image, Video, CalendarCheck, Smile, BarChart, Video as Live } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const PostForm = () => {
@@ -122,7 +122,7 @@ export const PostForm = () => {
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-4 flex-wrap">
                   <Button type="button" variant="ghost" size="sm" className="text-gray-500 hover:text-education-blue hover:bg-gray-50 p-1 rounded-full">
-                    <Photo size={18} />
+                    <Image size={18} />
                     <span className="ml-1 text-xs sm:text-sm hidden sm:inline">Photo</span>
                   </Button>
                   <Button type="button" variant="ghost" size="sm" className="text-gray-500 hover:text-education-blue hover:bg-gray-50 p-1 rounded-full">
