@@ -1,11 +1,8 @@
 
 import React from "react";
 import { SignIn as ClerkSignIn } from "@clerk/clerk-react";
-import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
-  const navigate = useNavigate();
-  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -15,10 +12,10 @@ const SignIn = () => {
         </div>
         <div className="mt-8">
           <ClerkSignIn 
-            routing="path" 
-            path="/sign-in" 
-            signUpUrl="/sign-up" 
-            fallbackRedirectUrl="/"
+            path="/sign-in"
+            routing="path"
+            signUpUrl="/sign-up"
+            redirectUrl="/"
             appearance={{
               elements: {
                 rootBox: "mx-auto w-full",
