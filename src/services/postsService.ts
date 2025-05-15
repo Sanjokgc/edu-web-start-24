@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { v4 as uuidv4 } from "uuid";
 
@@ -178,6 +177,13 @@ export const addComment = async (
   }
 };
 
+interface VoteParams {
+  p_post_id: string;
+  p_user_id: string; 
+  p_vote_type: 'upvote' | 'downvote';
+  p_existing_vote_type: string | null;
+}
+
 export const addVote = async (
   postId: string,
   userId: string,
@@ -195,13 +201,15 @@ export const addVote = async (
     if (fetchError) throw fetchError;
 
     const transaction = async () => {
-      // Fix for TypeScript error: remove the generic type parameters
-      const { error } = await supabase.rpc('handle_vote', {
+      // Use type assertion for the parameters to avoid TypeScript errors
+      const params: VoteParams = {
         p_post_id: postId,
         p_user_id: userId, 
         p_vote_type: voteType,
         p_existing_vote_type: existingVote ? existingVote.vote_type : null
-      });
+      };
+      
+      const { error } = await supabase.rpc('handle_vote', params);
       
       if (error) throw error;
     };
