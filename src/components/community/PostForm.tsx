@@ -85,6 +85,9 @@ export const PostForm = () => {
         title: "Success!",
         description: "Your post has been published.",
       });
+      
+      // Reload the page to show the new post
+      window.location.reload();
     }, 1000);
   };
 

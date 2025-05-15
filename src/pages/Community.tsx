@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -11,6 +10,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { PostForm } from "@/components/community/PostForm";
+import { Post } from "@/components/community/Post";
+import { PostList } from "@/components/community/PostList";
 
 const Community = () => {
   const { toast } = useToast();
@@ -26,6 +28,7 @@ const Community = () => {
   const [memberSearch, setMemberSearch] = useState('');
   const [newTopicName, setNewTopicName] = useState("");
   const [editingTopic, setEditingTopic] = useState<number | null>(null);
+  const [posts, setPosts] = useState<any[]>([]);
   
   const [topics, setTopics] = useState([
     { id: 1, name: "Study Abroad Guide", icon: "graduation-cap", color: "amber" },
@@ -35,6 +38,14 @@ const Community = () => {
     { id: 5, name: "Immigration Tips", icon: "plane", color: "amber" },
     { id: 6, name: "Language Tests", icon: "language", color: "amber" }
   ]);
+  
+  // Load posts from localStorage on component mount
+  useEffect(() => {
+    const storedPosts = localStorage.getItem("communityPosts");
+    if (storedPosts) {
+      setPosts(JSON.parse(storedPosts));
+    }
+  }, []);
 
   const handleAddTopic = () => {
     if (newTopicName.trim()) {
@@ -244,43 +255,8 @@ const Community = () => {
                 </div>
               </div>
               
-              <Card className="mb-4 shadow-sm">
-                <CardContent className="p-4">
-                  <div className="flex gap-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" />
-                      <AvatarFallback>YN</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <Input
-                        type="text"
-                        placeholder="What's on your mind?"
-                        className="border-none bg-gray-50 rounded-lg focus:ring-0 text-sm"
-                      />
-                      <div className="flex items-center gap-4 mt-3 flex-wrap">
-                        <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                          <span className="text-xs">Photo</span>
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                          <span className="text-xs">Video</span>
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                          <span className="text-xs">Feeling</span>
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                          <span className="text-xs">Poll</span>
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                          <span className="text-xs">Live</span>
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                          <span className="text-xs">Schedule</span>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Replace the placeholder card with the PostForm component */}
+              <PostForm />
               
               <Tabs defaultValue="all-posts" className="mb-4" onValueChange={setActiveTab}>
                 <TabsList className="bg-transparent border-b border-gray-200 w-full justify-start gap-2 h-auto p-0">
@@ -315,6 +291,8 @@ const Community = () => {
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="font-medium text-gray-700">Pinned Post · 3</h3>
                     </div>
+                    
+                    {/* Display pinned posts */}
                     <Card className="shadow-sm">
                       <CardHeader className="pb-2">
                         <div className="flex items-center gap-3">
@@ -350,7 +328,132 @@ const Community = () => {
                       </CardContent>
                     </Card>
                   </div>
+                  
+                  {/* Display user posts from localStorage */}
                   <div className="space-y-4">
+                    {posts.map((post) => (
+                      <Card key={post.id} className="shadow-sm">
+                        <CardHeader className="pb-2">
+                          <div className="flex items-center gap-3">
+                            <Avatar>
+                              <AvatarFallback>{post.author[0]}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <h4 className="font-medium flex items-center">
+                                    {post.author}
+                                  </h4>
+                                  <p className="text-xs text-gray-500">
+                                    {new Date(post.createdAt).toLocaleDateString()}
+                                  </p>
+                                </div>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded cursor-pointer">
+                                  <span>⋯</span>
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-2">
+                          {post.title !== "New Post" && (
+                            <h3 className="font-medium mb-2">{post.title}</h3>
+                          )}
+                          <p className="text-sm mb-3">{post.content}</p>
+                          
+                          <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="sm" className="text-gray-500 rounded cursor-pointer whitespace-nowrap">
+                              <span className="text-[#FF7F50] mr-2">👍</span>
+                              {post.upvotes}
+                            </Button>
+                            <span className="text-sm text-gray-500">Comments: {post.comments.length}</span>
+                          </div>
+                        </CardContent>
+                        <CardFooter className="border-t border-gray-100 pt-3">
+                          <div className="flex items-center gap-4">
+                            <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
+                              <span>⬆️</span>
+                              <span>{post.upvotes}</span>
+                            </Button>
+                            <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
+                              <span>⬇️</span>
+                              <span>{post.downvotes}</span>
+                            </Button>
+                            <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
+                              <span>💬</span>
+                              <span>{post.comments.length}</span>
+                            </Button>
+                            <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
+                              <span>🔄</span>
+                              <span>0</span>
+                            </Button>
+                            <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap ml-auto">
+                              <span>⋯</span>
+                            </Button>
+                          </div>
+                        </CardFooter>
+                      </Card>
+                    ))}
+
+                    {/* Keep existing sample posts */}
+                    <Card className="shadow-sm">
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" />
+                            <AvatarFallback>YN</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <Input
+                              type="text"
+                              placeholder="What's on your mind?"
+                              className="border-none bg-gray-50 rounded-lg focus:ring-0 text-sm"
+                            />
+                            <div className="flex items-center gap-4 mt-3 flex-wrap">
+                              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
+                                <span className="text-xs">Photo</span>
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
+                                <span className="text-xs">Video</span>
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
+                                <span className="text-xs">Feeling</span>
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
+                                <span className="text-xs">Poll</span>
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
+                                <span className="text-xs">Live</span>
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
+                                <span className="text-xs">Schedule</span>
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-2">
+                        <p className="text-sm mb-3">Just got my US Student Visa approved! 🎉 Here's my experience and tips for the interview process! #StudentVisa #USEducation</p>
+                        <div className="relative rounded-lg overflow-hidden h-[240px] mb-3">
+                          <img
+                            src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                            alt="Sunset over ocean"
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-14 w-14 rounded-full bg-black bg-opacity-50 text-white hover:bg-black hover:bg-opacity-70 rounded cursor-pointer"
+                              onClick={() => setVideoModalOpen(true)}
+                            >
+                              <span className="text-xl">▶️</span>
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
                     <Card className="shadow-sm">
                       <CardHeader className="pb-2">
                         <div className="flex items-center gap-3">
@@ -489,7 +592,7 @@ const Community = () => {
                       </CardHeader>
                       <CardContent className="pt-2">
                         <p className="text-sm mb-3">
-                          Here I teach advanced proofing techniques. It's hard for people to refuse if you use this technique. Watch it first on YouTube, then I'll comment.
+                          Here I teach advanced proofing techniques. It's hard for people to refuse if you use this technique.
                         </p>
                       </CardContent>
                       <CardFooter className="border-t border-gray-100 pt-3">
