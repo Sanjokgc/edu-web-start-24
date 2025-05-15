@@ -12,6 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, MessageSquare, BookmarkIcon, FileEdit, Settings, LogOut, Bell } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Define interfaces for user profile and messages
 interface UserProfile {
@@ -41,6 +43,13 @@ interface UserContent {
   title: string;
   type: "article" | "question" | "comment";
   createdAt: string;
+}
+
+interface UserSetting {
+  id: string;
+  name: string;
+  enabled: boolean;
+  category: "appearance" | "notifications" | "account" | "privacy";
 }
 
 // Mock data (in a real app, this would come from an API/database)
@@ -117,11 +126,76 @@ const mockUserContent: UserContent[] = [
   }
 ];
 
+const mockSettings: UserSetting[] = [
+  {
+    id: "darkMode",
+    name: "Dark Mode",
+    enabled: false,
+    category: "appearance"
+  },
+  {
+    id: "largeText",
+    name: "Large Text",
+    enabled: false,
+    category: "appearance"
+  },
+  {
+    id: "highContrast",
+    name: "High Contrast",
+    enabled: false,
+    category: "appearance"
+  },
+  {
+    id: "emailNotifs",
+    name: "Email Notifications",
+    enabled: true,
+    category: "notifications"
+  },
+  {
+    id: "pushNotifs",
+    name: "Push Notifications",
+    enabled: true,
+    category: "notifications"
+  },
+  {
+    id: "courseUpdates",
+    name: "Course Updates",
+    enabled: true,
+    category: "notifications"
+  },
+  {
+    id: "messageNotifs",
+    name: "Message Notifications",
+    enabled: true,
+    category: "notifications"
+  },
+  {
+    id: "twoFactorAuth",
+    name: "Two Factor Authentication",
+    enabled: false,
+    category: "account"
+  },
+  {
+    id: "showProfile",
+    name: "Show Profile to Public",
+    enabled: true,
+    category: "privacy"
+  },
+  {
+    id: "showActivity",
+    name: "Show Activity",
+    enabled: false,
+    category: "privacy"
+  }
+];
+
 // Main component
 const UserDropdown = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [settings, setSettings] = useState<UserSetting[]>(mockSettings);
+  const [activeTab, setActiveTab] = useState<string>("appearance");
   
   const handleMenuItemClick = (actionName: string) => {
     setActiveSection(actionName);
@@ -137,6 +211,27 @@ const UserDropdown = () => {
   // Navigate back to main dropdown menu
   const handleBack = () => {
     setActiveSection(null);
+  };
+
+  // Handle setting toggle
+  const handleToggleSetting = (settingId: string) => {
+    setSettings(prevSettings => 
+      prevSettings.map(setting => 
+        setting.id === settingId 
+          ? { ...setting, enabled: !setting.enabled } 
+          : setting
+      )
+    );
+
+    const setting = settings.find(s => s.id === settingId);
+    
+    if (setting) {
+      toast({
+        title: `${setting.name} ${!setting.enabled ? "Enabled" : "Disabled"}`,
+        description: `You have ${!setting.enabled ? "enabled" : "disabled"} ${setting.name.toLowerCase()}.`,
+        variant: "default",
+      });
+    }
   };
 
   // Render appropriate content based on active section
@@ -302,52 +397,114 @@ const UserDropdown = () => {
               <h3 className="font-semibold text-lg">Settings</h3>
               <button onClick={handleBack} className="text-sm text-blue-500">Back</button>
             </div>
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-sm font-medium mb-2">Account</h4>
-                <div className="space-y-2">
-                  <button className="text-sm text-gray-700 hover:text-education-blue block w-full text-left">
-                    Change Password
-                  </button>
-                  <button className="text-sm text-gray-700 hover:text-education-blue block w-full text-left">
-                    Email Preferences
-                  </button>
-                  <button className="text-sm text-gray-700 hover:text-education-blue block w-full text-left">
-                    Privacy Settings
-                  </button>
-                </div>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium mb-2">Appearance</h4>
-                <div className="space-y-2">
-                  <button className="text-sm text-gray-700 hover:text-education-blue block w-full text-left">
-                    Dark Mode
-                  </button>
-                  <button className="text-sm text-gray-700 hover:text-education-blue block w-full text-left">
-                    Font Size
-                  </button>
-                </div>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium mb-2">Notifications</h4>
-                <div className="space-y-2">
+            
+            <Tabs defaultValue="appearance" 
+                  value={activeTab} 
+                  onValueChange={setActiveTab}
+                  className="w-full">
+              <TabsList className="grid grid-cols-2 lg:grid-cols-4 mb-4">
+                <TabsTrigger value="appearance">Appearance</TabsTrigger>
+                <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                <TabsTrigger value="account">Account</TabsTrigger>
+                <TabsTrigger value="privacy">Privacy</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="appearance" className="space-y-3">
+                {settings
+                  .filter(setting => setting.category === "appearance")
+                  .map(setting => (
+                    <div key={setting.id} className="flex justify-between items-center p-2">
+                      <span className="text-sm">{setting.name}</span>
+                      <Switch 
+                        checked={setting.enabled} 
+                        onCheckedChange={() => handleToggleSetting(setting.id)} 
+                      />
+                    </div>
+                  ))}
+              </TabsContent>
+              
+              <TabsContent value="notifications" className="space-y-3">
+                {settings
+                  .filter(setting => setting.category === "notifications")
+                  .map(setting => (
+                    <div key={setting.id} className="flex justify-between items-center p-2">
+                      <span className="text-sm">{setting.name}</span>
+                      <Switch 
+                        checked={setting.enabled} 
+                        onCheckedChange={() => handleToggleSetting(setting.id)} 
+                      />
+                    </div>
+                  ))}
+              </TabsContent>
+              
+              <TabsContent value="account" className="space-y-3">
+                {settings
+                  .filter(setting => setting.category === "account")
+                  .map(setting => (
+                    <div key={setting.id} className="flex justify-between items-center p-2">
+                      <span className="text-sm">{setting.name}</span>
+                      <Switch 
+                        checked={setting.enabled} 
+                        onCheckedChange={() => handleToggleSetting(setting.id)} 
+                      />
+                    </div>
+                  ))}
+                  
+                <div className="mt-4 space-y-2">
                   <button 
-                    className="text-sm text-gray-700 hover:text-education-blue block w-full text-left"
+                    className="w-full bg-gray-100 text-gray-800 rounded-md py-1.5 text-sm"
                     onClick={() => {
                       toast({
-                        title: "Notification Settings",
-                        description: "Notification preferences will be available soon.",
+                        title: "Change Password",
+                        description: "Password change functionality will be available soon.",
                       });
                     }}
                   >
-                    Push Notifications
+                    Change Password
                   </button>
-                  <button className="text-sm text-gray-700 hover:text-education-blue block w-full text-left">
-                    Email Alerts
+                  
+                  <button 
+                    className="w-full bg-gray-100 text-gray-800 rounded-md py-1.5 text-sm"
+                    onClick={() => {
+                      toast({
+                        title: "Link Accounts",
+                        description: "Account linking will be available soon.",
+                      });
+                    }}
+                  >
+                    Link Other Accounts
                   </button>
                 </div>
-              </div>
-            </div>
+              </TabsContent>
+              
+              <TabsContent value="privacy" className="space-y-3">
+                {settings
+                  .filter(setting => setting.category === "privacy")
+                  .map(setting => (
+                    <div key={setting.id} className="flex justify-between items-center p-2">
+                      <span className="text-sm">{setting.name}</span>
+                      <Switch 
+                        checked={setting.enabled} 
+                        onCheckedChange={() => handleToggleSetting(setting.id)} 
+                      />
+                    </div>
+                  ))}
+                  
+                <div className="mt-4 pt-4 border-t">
+                  <button 
+                    className="w-full bg-red-100 text-red-600 rounded-md py-1.5 text-sm"
+                    onClick={() => {
+                      toast({
+                        title: "Data Export Requested",
+                        description: "Your data export request has been received.",
+                      });
+                    }}
+                  >
+                    Export My Data
+                  </button>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         );
         
