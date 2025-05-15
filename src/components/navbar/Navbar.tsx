@@ -1,13 +1,11 @@
 
 import React, { useState } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
 import DesktopMenu from "./DesktopMenu";
 import MobileMenu from "./MobileMenu";
 import MobileMenuButton from "./MobileMenuButton";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isMobile = useIsMobile();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

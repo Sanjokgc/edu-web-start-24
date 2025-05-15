@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth, useUser, SignOutButton } from "@clerk/clerk-react";
-import { Book, GraduationCap, Users, User, MessageSquare, BookmarkIcon, Settings, LogOut } from "lucide-react";
+import { Book, GraduationCap, Users, User, MessageSquare, BookmarkIcon, Settings, LogOut, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import NavbarLink from "./NavbarLink";
@@ -66,7 +66,11 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 <User size={16} />
                 <span>Profile</span>
               </Link>
-              <Link to="/messages" className="flex items-center gap-2 text-gray-700 hover:text-education-blue text-sm" onClick={onClose}>
+              <Link 
+                to="/messages" 
+                className="flex items-center gap-2 text-gray-700 hover:text-education-blue text-sm" 
+                onClick={onClose}
+              >
                 <MessageSquare size={16} />
                 <span>Messages</span>
               </Link>
@@ -89,7 +93,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
         ) : (
           <Link to="/sign-in" onClick={onClose}>
             <Button className="bg-education-blue hover:bg-blue-700 text-white w-full flex items-center gap-2 justify-center">
-              <LogOut size={18} />
+              <LogIn size={18} />
               Sign In
             </Button>
           </Link>
