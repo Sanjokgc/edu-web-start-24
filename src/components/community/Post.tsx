@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowUp, ArrowDown, MessageSquare } from "lucide-react";
+import { ArrowUp, ArrowDown, MessageSquare, ThumbsUp } from "lucide-react";
 
 type CommentType = {
   id: string;
@@ -101,11 +101,11 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
   const formattedDate = formatDistanceToNow(new Date(post.createdAt), { addSuffix: true });
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm">
       <CardHeader className="pb-3 pt-5 px-5">
         <div className="flex justify-between items-start">
           <div>
-            <h3 className="text-xl font-semibold mb-1">{post.title}</h3>
+            <h3 className="text-xl font-semibold mb-1 text-black">{post.title}</h3>
             <div className="flex items-center text-sm text-gray-500 space-x-2">
               <span className="font-medium">{post.author}</span>
               <span>•</span>
@@ -117,7 +117,7 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
               onClick={handleUpvote} 
               variant="ghost" 
               size="sm"
-              className="flex items-center text-gray-700"
+              className="flex items-center text-gray-700 hover:text-education-blue"
             >
               <ArrowUp className="mr-1" size={16} />
               {post.upvotes}
@@ -126,7 +126,7 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
               onClick={handleDownvote} 
               variant="ghost" 
               size="sm"
-              className="flex items-center text-gray-700"
+              className="flex items-center text-gray-700 hover:text-education-blue"
             >
               <ArrowDown className="mr-1" size={16} />
               {post.downvotes}
@@ -135,18 +135,23 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
         </div>
       </CardHeader>
       <CardContent className="px-5">
-        <p className="whitespace-pre-line">{post.content}</p>
+        <p className="whitespace-pre-line text-black">{post.content}</p>
       </CardContent>
       <CardFooter className="flex flex-col items-start space-y-4 px-5 pb-5">
-        <div className="w-full">
+        <div className="w-full flex items-center">
           <Button 
             variant="ghost" 
-            className="flex items-center text-gray-700"
+            className="flex items-center text-gray-700 hover:text-education-blue"
             onClick={() => setShowComments(!showComments)}
           >
             <MessageSquare className="mr-2" size={16} />
             {post.comments.length} Comments
           </Button>
+          <div className="flex items-center ml-auto text-gray-700">
+            <ThumbsUp className="mr-1" size={16} color="#2563eb" />
+            <span className="ml-1 mr-4">{post.upvotes}</span>
+            <span>Comments: {post.comments.length}</span>
+          </div>
         </div>
         
         {showComments && (
@@ -156,13 +161,13 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
                 placeholder="Write a comment..."
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                className="resize-none"
+                className="resize-none border-gray-200 focus:border-education-blue focus:ring-education-blue"
                 rows={2}
               />
               <Button 
                 type="submit" 
                 size="sm" 
-                className="bg-education-blue hover:bg-blue-700"
+                className="bg-education-blue text-white hover:bg-blue-700"
               >
                 Post Comment
               </Button>
@@ -176,7 +181,7 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
                       <span className="font-medium">{comment.author}</span>
                       <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>
                     </div>
-                    <p>{comment.content}</p>
+                    <p className="text-black">{comment.content}</p>
                   </div>
                 ))
               ) : (

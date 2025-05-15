@@ -73,6 +73,13 @@ export default {
 					orange: '#f97316',
 					green: '#22c55e',
 					lightGray: '#f8fafc',
+				},
+				community: {
+					primary: 'hsl(var(--community-primary))',
+					secondary: 'hsl(var(--community-secondary))',
+					accent: 'hsl(var(--community-accent))',
+					background: 'hsl(var(--community-background))',
+					text: 'hsl(var(--community-text))',
 				}
 			},
 			borderRadius: {
