@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { v4 as uuidv4 } from "uuid";
 
@@ -194,8 +195,8 @@ export const addVote = async (
     if (fetchError) throw fetchError;
 
     const transaction = async () => {
-      // Fix for TypeScript error: specify both input and output generic types
-      const { error } = await supabase.rpc<any, void>('handle_vote', {
+      // Fix for TypeScript error: remove the generic type parameters
+      const { error } = await supabase.rpc('handle_vote', {
         p_post_id: postId,
         p_user_id: userId, 
         p_vote_type: voteType,
