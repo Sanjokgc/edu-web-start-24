@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { v4 as uuidv4 } from "uuid";
 
@@ -195,7 +194,6 @@ export const addVote = async (
     if (fetchError) throw fetchError;
 
     const transaction = async () => {
-      // Fix for TypeScript error: Remove explicit type parameters and let TS infer them
       const { error } = await supabase.rpc('handle_vote', {
         p_post_id: postId,
         p_user_id: userId, 
