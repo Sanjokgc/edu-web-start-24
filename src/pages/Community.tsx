@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
@@ -12,8 +11,7 @@ import CommunityContent from "@/components/community/CommunityContent";
 import TopicDialog from "@/components/community/TopicDialog";
 import CreateGroupDialog from "@/components/community/CreateGroupDialog";
 import VideoModal from "@/components/community/VideoModal";
-import { Post } from "@/services/postsService";
-import { fetchPosts, subscribeToPostChanges } from "@/services/postsService";
+import { Post, fetchPosts, subscribeToPostChanges } from "@/services/postsService";
 
 const Community = () => {
   const { toast } = useToast();

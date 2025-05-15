@@ -3,7 +3,11 @@ import React, { useState, useEffect } from "react";
 import { Post as PostComponent } from "@/components/community/Post";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { Post, fetchPosts, subscribeToPostChanges } from "@/services/postsService";
+import { 
+  Post, 
+  fetchPosts, 
+  subscribeToPostChanges 
+} from "@/services/postsService";
 
 export const PostList = () => {
   const [posts, setPosts] = useState<Post[]>([]);

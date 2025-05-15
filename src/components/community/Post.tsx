@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { formatDistanceToNow } from "date-fns";
@@ -7,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowUp, ArrowDown, MessageSquare } from "lucide-react";
-import { Post as PostType } from "@/services/postsService";
-import { addComment, addVote } from "@/services/postsService";
+import { Post as PostType, addComment, addVote } from "@/services/postsService";
 
 interface PostProps {
   post: PostType;
