@@ -6,6 +6,7 @@ import { PostForm } from "@/components/community/PostForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { ArrowUp, ArrowDown, MessageSquare, RefreshCcw, MoreHorizontal } from "lucide-react";
 import PinnedPosts from "./PinnedPosts";
 import SamplePosts from "./SamplePosts";
 
@@ -105,7 +106,7 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
                           </p>
                         </div>
                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded cursor-pointer">
-                          <span>⋯</span>
+                          <MoreHorizontal size={20} />
                         </Button>
                       </div>
                     </div>
@@ -116,35 +117,27 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
                     <h3 className="font-medium mb-2">{post.title}</h3>
                   )}
                   <p className="text-sm mb-3">{post.content}</p>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" className="text-gray-500 rounded cursor-pointer whitespace-nowrap">
-                      <span className="text-[#FF7F50] mr-2">👍</span>
-                      {post.upvotes}
-                    </Button>
-                    <span className="text-sm text-gray-500">Comments: {post.comments.length}</span>
-                  </div>
                 </CardContent>
                 <CardFooter className="border-t border-gray-100 pt-3">
                   <div className="flex items-center gap-4">
                     <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                      <span>⬆️</span>
+                      <ArrowUp size={18} />
                       <span>{post.upvotes}</span>
                     </Button>
                     <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                      <span>⬇️</span>
+                      <ArrowDown size={18} />
                       <span>{post.downvotes}</span>
                     </Button>
                     <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                      <span>💬</span>
+                      <MessageSquare size={18} />
                       <span>{post.comments.length}</span>
                     </Button>
                     <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                      <span>🔄</span>
+                      <RefreshCcw size={18} />
                       <span>0</span>
                     </Button>
                     <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap ml-auto">
-                      <span>⋯</span>
+                      <MoreHorizontal size={18} />
                     </Button>
                   </div>
                 </CardFooter>
@@ -231,7 +224,7 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
                         <p className="text-xs text-gray-500">1 day ago</p>
                       </div>
                       <Button variant="ghost" size="icon" className="h-8 w-8 rounded cursor-pointer">
-                        <span>⋯</span>
+                        <MoreHorizontal size={20} />
                       </Button>
                     </div>
                   </div>
@@ -245,22 +238,22 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
               <CardFooter className="border-t border-gray-100 pt-3">
                 <div className="flex items-center gap-4">
                   <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <span>⬆️</span>
+                    <ArrowUp size={18} />
                     <span>15.2K</span>
                   </Button>
                   <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <span>⬇️</span>
+                    <ArrowDown size={18} />
                   </Button>
                   <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <span>💬</span>
+                    <MessageSquare size={18} />
                     <span>769</span>
                   </Button>
                   <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <span>🔄</span>
+                    <RefreshCcw size={18} />
                     <span>164</span>
                   </Button>
                   <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap ml-auto">
-                    <span>⋯</span>
+                    <MoreHorizontal size={18} />
                   </Button>
                 </div>
               </CardFooter>
@@ -291,22 +284,22 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
               <CardFooter className="border-t border-gray-100 pt-3">
                 <div className="flex items-center gap-4">
                   <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <span>⬆️</span>
+                    <ArrowUp size={18} />
                     <span>15.2K</span>
                   </Button>
                   <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <span>⬇️</span>
+                    <ArrowDown size={18} />
                   </Button>
                   <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <span>💬</span>
+                    <MessageSquare size={18} />
                     <span>769</span>
                   </Button>
                   <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <span>🔄</span>
+                    <RefreshCcw size={18} />
                     <span>164</span>
                   </Button>
                   <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap ml-auto">
-                    <span>⋯</span>
+                    <MoreHorizontal size={18} />
                   </Button>
                 </div>
               </CardFooter>

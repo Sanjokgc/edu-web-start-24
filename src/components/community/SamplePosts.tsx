@@ -105,9 +105,6 @@ export const SamplePosts: React.FC<SamplePostsProps> = ({
                 />
               </div>
             )}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">Comments: {post.comments}</span>
-            </div>
           </CardContent>
           <CardFooter className="border-t border-gray-100 pt-3">
             <div className="flex items-center gap-4">
