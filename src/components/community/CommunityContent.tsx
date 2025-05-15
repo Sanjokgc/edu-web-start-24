@@ -1,14 +1,13 @@
 
 import React from "react";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PostForm } from "@/components/community/PostForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ArrowUp, ArrowDown, MessageSquare, RefreshCcw, MoreHorizontal } from "lucide-react";
-import PinnedPosts from "./PinnedPosts";
-import SamplePosts from "./SamplePosts";
+import { PostList } from "@/components/community/PostList";
 
 interface Post {
   id: string;
@@ -85,8 +84,6 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
         </TabsList>
 
         <TabsContent value="all-posts" className="mt-4">
-          <PinnedPosts setVideoModalOpen={setVideoModalOpen} />
-          
           <div className="space-y-4">
             {posts.map((post) => (
               <Card key={post.id} className="shadow-sm">
@@ -143,206 +140,40 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
                 </CardFooter>
               </Card>
             ))}
-
-            <Card className="shadow-sm">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" />
-                    <AvatarFallback>YN</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <Input
-                      type="text"
-                      placeholder="What's on your mind?"
-                      className="border-none bg-gray-50 rounded-lg focus:ring-0 text-sm"
-                    />
-                    <div className="flex items-center gap-4 mt-3 flex-wrap">
-                      <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                        <span className="text-xs">Photo</span>
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                        <span className="text-xs">Video</span>
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                        <span className="text-xs">Feeling</span>
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                        <span className="text-xs">Poll</span>
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                        <span className="text-xs">Live</span>
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#FF7F50] hover:bg-transparent p-0 rounded cursor-pointer whitespace-nowrap">
-                        <span className="text-xs">Schedule</span>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-2">
-                <p className="text-sm mb-3">Just got my US Student Visa approved! 🎉 Here's my experience and tips for the interview process! #StudentVisa #USEducation</p>
-                <div className="relative rounded-lg overflow-hidden h-[240px] mb-3">
-                  <img
-                    src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                    alt="Sunset over ocean"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-14 w-14 rounded-full bg-black bg-opacity-50 text-white hover:bg-black hover:bg-opacity-70 rounded cursor-pointer"
-                      onClick={() => setVideoModalOpen(true)}
-                    >
-                      <span className="text-xl">▶️</span>
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
             
-            <SamplePosts setVideoModalOpen={setVideoModalOpen} />
+            {posts.length === 0 && (
+              <div className="text-center py-12 bg-white rounded-lg shadow-sm border">
+                <h3 className="text-xl font-medium text-gray-700 mb-2">No posts yet</h3>
+                <p className="text-gray-500 mb-6">Be the first to share with the community!</p>
+              </div>
+            )}
           </div>
         </TabsContent>
 
         <TabsContent value="trending-post" className="mt-4">
           <div className="space-y-4">
-            <Card className="shadow-sm">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" />
-                    <AvatarFallback>AM</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium flex items-center">
-                          Arlene McCoy
-                        </h4>
-                        <p className="text-xs text-gray-500">1 day ago</p>
-                      </div>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded cursor-pointer">
-                        <MoreHorizontal size={20} />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-2">
-                <p className="text-sm mb-3">
-                  Here I teach advanced proofing techniques. It's hard for people to refuse if you use this technique.
-                </p>
-              </CardContent>
-              <CardFooter className="border-t border-gray-100 pt-3">
-                <div className="flex items-center gap-4">
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <ArrowUp size={18} />
-                    <span>15.2K</span>
-                  </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <ArrowDown size={18} />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <MessageSquare size={18} />
-                    <span>769</span>
-                  </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <RefreshCcw size={18} />
-                    <span>164</span>
-                  </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap ml-auto">
-                    <MoreHorizontal size={18} />
-                  </Button>
-                </div>
-              </CardFooter>
-            </Card>
+            <div className="text-center py-12 bg-white rounded-lg shadow-sm border">
+              <h3 className="text-xl font-medium text-gray-700 mb-2">No trending posts</h3>
+              <p className="text-gray-500 mb-6">Engage with the community to see trending content!</p>
+            </div>
           </div>
         </TabsContent>
 
         <TabsContent value="discussions" className="mt-4">
           <div className="space-y-4">
-            <Card className="shadow-sm">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" />
-                    <AvatarFallback>TW</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h4 className="font-medium">Theresa Webb</h4>
-                    <p className="text-xs text-gray-500">2 days ago</p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-2">
-                <p className="text-sm mb-3">
-                  I finally understood why I said I didn't need to take the course, until I saw it. Now I even want to join Bakers Club even more.
-                </p>
-              </CardContent>
-              <CardFooter className="border-t border-gray-100 pt-3">
-                <div className="flex items-center gap-4">
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <ArrowUp size={18} />
-                    <span>15.2K</span>
-                  </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <ArrowDown size={18} />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <MessageSquare size={18} />
-                    <span>769</span>
-                  </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap">
-                    <RefreshCcw size={18} />
-                    <span>164</span>
-                  </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-600 hover:text-[#FF7F50] rounded cursor-pointer whitespace-nowrap ml-auto">
-                    <MoreHorizontal size={18} />
-                  </Button>
-                </div>
-              </CardFooter>
-            </Card>
+            <div className="text-center py-12 bg-white rounded-lg shadow-sm border">
+              <h3 className="text-xl font-medium text-gray-700 mb-2">No discussions yet</h3>
+              <p className="text-gray-500 mb-6">Start a discussion to get the conversation going!</p>
+            </div>
           </div>
         </TabsContent>
 
         <TabsContent value="media-pics" className="mt-4">
           <div className="space-y-4">
-            <Card className="shadow-sm">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" />
-                    <AvatarFallback>SC</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h4 className="font-medium">Sarah Chen</h4>
-                    <p className="text-xs text-gray-500">8hr ago</p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-2">
-                <p className="text-sm mb-3">Just got my US Student Visa approved! 🎉 Here's my experience and tips for the interview process! #StudentVisa #USEducation</p>
-                <div className="relative rounded-lg overflow-hidden h-[240px] mb-3">
-                  <img
-                    src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                    alt="Sunset over ocean"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-14 w-14 rounded-full bg-black bg-opacity-50 text-white hover:bg-black hover:bg-opacity-70 rounded cursor-pointer"
-                      onClick={() => setVideoModalOpen(true)}
-                    >
-                      <span className="text-xl">▶️</span>
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="text-center py-12 bg-white rounded-lg shadow-sm border">
+              <h3 className="text-xl font-medium text-gray-700 mb-2">No media content</h3>
+              <p className="text-gray-500 mb-6">Share photos and videos to see them here!</p>
+            </div>
           </div>
         </TabsContent>
       </Tabs>
