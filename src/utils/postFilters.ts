@@ -3,7 +3,10 @@ import { Post } from "@/hooks/usePostManagement";
 
 export const filterPostsByTab = (posts: Post[], tabValue: string) => {
   if (tabValue === "all-posts") {
-    return posts;
+    // Show all posts, sorted by newest first
+    return [...posts].sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
   } else if (tabValue === "trending-post") {
     // Show posts with most votes/comments as trending
     return [...posts].sort((a, b) => 

@@ -17,6 +17,7 @@ export const PostFeed: React.FC<PostFeedProps> = ({
   onVote,
   onAddComment
 }) => {
+  // Get filtered posts based on active tab
   const filteredPosts = filterPostsByTab(posts, activeTab);
   
   return (

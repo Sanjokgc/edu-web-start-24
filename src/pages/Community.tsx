@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
@@ -39,7 +40,7 @@ const Community = () => {
     { id: 6, name: "Language Tests", icon: "language", color: "amber" }
   ]);
   
-  // Load posts from localStorage on component mount
+  // Load ALL posts from localStorage on component mount
   useEffect(() => {
     const fetchPosts = () => {
       setLoading(true);
@@ -53,6 +54,12 @@ const Community = () => {
             upvotedBy: post.upvotedBy || [],
             downvotedBy: post.downvotedBy || []
           }));
+          
+          // Sort posts by creation date (newest first)
+          updatedPosts.sort((a: Post, b: Post) => 
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          
           setPosts(updatedPosts);
           // Update localStorage with the normalized data
           localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));

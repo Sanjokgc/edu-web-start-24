@@ -1,30 +1,9 @@
+
 import React, { useState, useEffect } from "react";
 import { Post as PostComponent } from "@/components/community/Post";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Post } from "@/hooks/usePostManagement";
-
-type PostType = {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  authorId: string;
-  createdAt: string;
-  upvotes: number;
-  downvotes: number;
-  comments: CommentType[];
-  upvotedBy: string[];  // Changed from optional to required
-  downvotedBy: string[]; // Changed from optional to required
-};
-
-type CommentType = {
-  id: string;
-  content: string;
-  author: string;
-  authorId: string;
-  createdAt: string;
-};
 
 export const PostList = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -32,7 +11,7 @@ export const PostList = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load posts from localStorage
+    // Load ALL posts from localStorage
     const loadPosts = () => {
       try {
         const savedPosts = localStorage.getItem("communityPosts");
@@ -45,6 +24,11 @@ export const PostList = () => {
           downvotedBy: post.downvotedBy || [],
           comments: post.comments || []
         }));
+        
+        // Sort posts by creation date (newest first)
+        normalizedPosts.sort((a: Post, b: Post) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
         
         setPosts(normalizedPosts);
       } catch (error) {
