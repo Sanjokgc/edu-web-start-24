@@ -27,15 +27,10 @@ export const addVote = async (
         p_existing_vote_type: existingVote ? existingVote.vote_type : null
       };
       
-      // Call the RPC function with explicit type casting
+      // Call the RPC function without type assertion
       const { error } = await supabase.rpc(
         'handle_vote',
-        params as {
-          p_post_id: string;
-          p_user_id: string;
-          p_vote_type: string;
-          p_existing_vote_type: string | null;
-        }
+        params
       );
       
       if (error) throw error;
