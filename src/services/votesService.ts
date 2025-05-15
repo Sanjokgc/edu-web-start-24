@@ -27,7 +27,7 @@ export const addVote = async (
         p_existing_vote_type: existingVote ? existingVote.vote_type : null
       };
       
-      // Call the RPC without specifying generic types, let TypeScript infer them
+      // Call the RPC function
       const { error } = await supabase.rpc('handle_vote', params);
       
       if (error) throw error;
