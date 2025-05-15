@@ -1,11 +1,14 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Book } from "lucide-react";
+import { Menu, X, Book, LogIn, LogOut, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth, useUser, SignOutButton } from "@clerk/clerk-react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isSignedIn } = useAuth();
+  const { user } = useUser();
 
   return (
     <nav className="bg-white shadow-sm py-4 fixed w-full top-0 z-50">
@@ -32,9 +35,28 @@ const Navbar = () => {
             <Book size={18} />
             Resources
           </Link>
-          <Button className="bg-education-blue hover:bg-blue-700 text-white">
-            Get Started
-          </Button>
+          
+          {isSignedIn ? (
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <User size={18} />
+                <span className="text-sm font-medium">{user?.fullName ?? user?.firstName}</span>
+              </div>
+              <SignOutButton>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <LogOut size={18} />
+                  Sign Out
+                </Button>
+              </SignOutButton>
+            </div>
+          ) : (
+            <Link to="/sign-in">
+              <Button className="bg-education-blue hover:bg-blue-700 text-white flex items-center gap-2">
+                <LogIn size={18} />
+                Sign In
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -88,9 +110,31 @@ const Navbar = () => {
               <Book size={18} />
               Resources
             </Link>
-            <Button className="bg-education-blue hover:bg-blue-700 text-white w-full">
-              Get Started
-            </Button>
+            
+            {isSignedIn ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <User size={18} />
+                  <span className="text-sm font-medium">{user?.fullName ?? user?.firstName}</span>
+                </div>
+                <SignOutButton>
+                  <Button variant="outline" className="flex items-center gap-2 w-full">
+                    <LogOut size={18} />
+                    Sign Out
+                  </Button>
+                </SignOutButton>
+              </>
+            ) : (
+              <Link 
+                to="/sign-in" 
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Button className="bg-education-blue hover:bg-blue-700 text-white w-full flex items-center gap-2 justify-center">
+                  <LogIn size={18} />
+                  Sign In
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       )}
