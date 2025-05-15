@@ -1,6 +1,7 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Book, LogIn, LogOut, User, Users, Settings, BookmarkIcon, MessageSquare, FileEdit } from "lucide-react";
+import { Menu, X, Book, LogIn, LogOut, User, Users, Settings, BookmarkIcon, MessageSquare, FileEdit, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth, useUser, SignOutButton } from "@clerk/clerk-react";
 import { 
@@ -34,6 +35,10 @@ const Navbar = () => {
           </Link>
           <Link to="#features" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
             Features
+          </Link>
+          <Link to="/experience" className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2">
+            <GraduationCap size={18} />
+            Experience
           </Link>
           <Link to="/community" className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2">
             <Users size={18} />
@@ -150,6 +155,14 @@ const Navbar = () => {
             >
               Features
             </a>
+            <Link 
+              to="/experience" 
+              className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <GraduationCap size={18} />
+              Experience
+            </Link>
             <Link 
               to="/community" 
               className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2"

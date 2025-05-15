@@ -8,6 +8,7 @@ import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import Index from "./pages/Index";
 import Resources from "./pages/Resources";
 import Community from "./pages/Community";
+import Experience from "./pages/Experience";
 import NotFound from "./pages/NotFound";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/sign-in/*" element={<SignIn />} />
           <Route path="/sign-up/*" element={<SignUp />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/experience" element={<Experience />} />
           
           {/* Protected routes */}
           <Route 
