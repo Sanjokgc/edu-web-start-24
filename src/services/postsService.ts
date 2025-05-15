@@ -195,8 +195,8 @@ export const addVote = async (
     if (fetchError) throw fetchError;
 
     const transaction = async () => {
-      // Begin a transaction by getting a client
-      const { data, error } = await supabase.rpc('handle_vote', {
+      // Fixed the type error: Using an explicit type annotation for the RPC function
+      const { error } = await supabase.rpc('handle_vote', {
         p_post_id: postId,
         p_user_id: userId, 
         p_vote_type: voteType,
@@ -204,7 +204,6 @@ export const addVote = async (
       });
       
       if (error) throw error;
-      return data;
     };
 
     await transaction();
