@@ -134,7 +134,14 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
               <span>{formattedDate}</span>
             </div>
           </div>
-          <div className="flex space-x-2">
+        </div>
+      </CardHeader>
+      <CardContent className="px-5">
+        <p className="whitespace-pre-line text-black">{post.content}</p>
+      </CardContent>
+      <CardFooter className="flex flex-col items-start space-y-4 px-5 pb-5">
+        <div className="w-full flex items-center">
+          <div className="flex space-x-2 mr-4">
             <Button 
               onClick={handleUpvote} 
               variant="ghost" 
@@ -154,13 +161,6 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
               {post.downvotes}
             </Button>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent className="px-5">
-        <p className="whitespace-pre-line text-black">{post.content}</p>
-      </CardContent>
-      <CardFooter className="flex flex-col items-start space-y-4 px-5 pb-5">
-        <div className="w-full flex items-center">
           <Button 
             variant="ghost" 
             className="flex items-center text-gray-700 hover:text-blue-600"
@@ -169,9 +169,6 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
             <MessageSquare className="mr-2" size={16} />
             {post.comments.length} Comments
           </Button>
-          <div className="ml-auto text-gray-700">
-            <span>Comments: {post.comments.length}</span>
-          </div>
         </div>
         
         {showComments && (
