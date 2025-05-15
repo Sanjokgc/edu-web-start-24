@@ -43,6 +43,15 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
           onClick={onClose} 
         />
         
+        {isSignedIn && (
+          <NavbarLink 
+            to="/messages" 
+            label="Messages" 
+            icon={<MessageSquare size={18} />} 
+            onClick={onClose} 
+          />
+        )}
+        
         {isSignedIn ? (
           <>
             <div className="flex items-center gap-2 pt-2 border-t">
@@ -57,7 +66,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 <User size={16} />
                 <span>Profile</span>
               </Link>
-              <Link to="#" className="flex items-center gap-2 text-gray-700 hover:text-education-blue text-sm">
+              <Link to="/messages" className="flex items-center gap-2 text-gray-700 hover:text-education-blue text-sm" onClick={onClose}>
                 <MessageSquare size={16} />
                 <span>Messages</span>
               </Link>

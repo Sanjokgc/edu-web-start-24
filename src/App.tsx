@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Resources from "./pages/Resources";
 import Community from "./pages/Community";
 import Experience from "./pages/Experience";
+import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -36,6 +37,14 @@ const App = () => (
             element={
               <AuthRoute>
                 <Resources />
+              </AuthRoute>
+            } 
+          />
+          <Route 
+            path="/messages" 
+            element={
+              <AuthRoute>
+                <Messages />
               </AuthRoute>
             } 
           />

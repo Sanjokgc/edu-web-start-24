@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
-import { Book, GraduationCap, Users, LogIn } from "lucide-react";
+import { Book, GraduationCap, Users, LogIn, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NavbarLink from "./NavbarLink";
 import UserDropdown from "./UserDropdown";
@@ -30,6 +30,13 @@ const DesktopMenu = () => {
         label="Resources" 
         icon={<Book size={18} />} 
       />
+      {isSignedIn && (
+        <NavbarLink 
+          to="/messages" 
+          label="Messages" 
+          icon={<MessageSquare size={18} />} 
+        />
+      )}
       
       {isSignedIn ? (
         <UserDropdown />

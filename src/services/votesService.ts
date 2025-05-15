@@ -28,7 +28,6 @@ export const addVote = async (
       };
       
       // Call the RPC function without explicit type arguments
-      // Let TypeScript infer the types based on the parameters
       const { error } = await supabase.rpc(
         'handle_vote',
         params
