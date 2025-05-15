@@ -27,11 +27,10 @@ export const addVote = async (
         p_existing_vote_type: existingVote ? existingVote.vote_type : null
       };
       
-      // Call the RPC function without explicit type parameters
-      // Let TypeScript infer the types
+      // Call the RPC function with type assertion
       const { error } = await supabase.rpc(
         'handle_vote',
-        params
+        params as any  // Use type assertion to bypass the TypeScript error
       );
       
       if (error) throw error;
