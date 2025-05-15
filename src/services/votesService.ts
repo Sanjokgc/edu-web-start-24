@@ -27,8 +27,8 @@ export const addVote = async (
         p_existing_vote_type: existingVote ? existingVote.vote_type : null
       };
       
-      // Fix the type arguments for rpc
-      const { error } = await supabase.rpc<void, VoteParams>(
+      // Fix the type arguments for rpc call
+      const { error } = await supabase.rpc(
         'handle_vote',
         params
       );
