@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Book, LogIn, LogOut, User } from "lucide-react";
+import { Menu, X, Book, LogIn, LogOut, User, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth, useUser, SignOutButton } from "@clerk/clerk-react";
 
@@ -30,6 +30,10 @@ const Navbar = () => {
           </Link>
           <Link to="#testimonials" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
             Testimonials
+          </Link>
+          <Link to="/community" className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2">
+            <Users size={18} />
+            Community
           </Link>
           <Link to="/resources" className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2">
             <Book size={18} />
@@ -102,6 +106,14 @@ const Navbar = () => {
             >
               Testimonials
             </a>
+            <Link 
+              to="/community" 
+              className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <Users size={18} />
+              Community
+            </Link>
             <Link 
               to="/resources" 
               className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2"
