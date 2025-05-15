@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -34,7 +35,8 @@ export interface ConversationParticipant {
 // Get all conversations for the current user
 export const getConversations = async (userId: string): Promise<Conversation[]> => {
   try {
-    const { data: participantData, error: participantError } = await supabase
+    // Use type assertion to bypass TypeScript checking
+    const { data: participantData, error: participantError } = await (supabase as any)
       .from('conversation_participants')
       .select(`
         conversation_id
@@ -47,9 +49,9 @@ export const getConversations = async (userId: string): Promise<Conversation[]> 
       return [];
     }
 
-    const conversationIds = participantData.map(p => p.conversation_id);
+    const conversationIds = participantData.map((p: any) => p.conversation_id);
 
-    // Use any to bypass TypeScript checking for tables that don't exist in the generated types
+    // Use type assertion to bypass TypeScript checking
     const { data: conversations, error: conversationsError } = await (supabase as any)
       .from('conversations')
       .select(`
@@ -133,7 +135,7 @@ export const createConversation = async (currentUserId: string, otherUserId: str
       .eq('user_id', currentUserId);
 
     if (existingConversations && existingConversations.length > 0) {
-      const conversationIds = existingConversations.map(c => c.conversation_id);
+      const conversationIds = existingConversations.map((c: any) => c.conversation_id);
       
       const { data: sharedConversations } = await (supabase as any)
         .from('conversation_participants')
