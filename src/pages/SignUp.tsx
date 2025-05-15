@@ -18,7 +18,7 @@ const SignUp = () => {
             routing="path" 
             path="/sign-up" 
             signInUrl="/sign-in" 
-            afterSignUpUrl="/"
+            fallbackRedirectUrl="/"
             appearance={{
               elements: {
                 rootBox: "mx-auto w-full",
