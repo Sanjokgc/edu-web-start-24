@@ -223,7 +223,7 @@ export const subscribeToPostChanges = (
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'posts' },
-      async (payload) => {
+      async () => {
         // Refetch all posts to get the latest state
         try {
           const posts = await fetchPosts();
@@ -236,7 +236,7 @@ export const subscribeToPostChanges = (
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'comments' },
-      async (payload) => {
+      async () => {
         // Refetch all posts to get the latest state with comments
         try {
           const posts = await fetchPosts();
@@ -249,7 +249,7 @@ export const subscribeToPostChanges = (
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'post_votes' },
-      async (payload) => {
+      async () => {
         // Refetch all posts to get the latest state with votes
         try {
           const posts = await fetchPosts();
