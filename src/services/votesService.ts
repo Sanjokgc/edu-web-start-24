@@ -27,7 +27,7 @@ export const addVote = async (
         p_existing_vote_type: existingVote ? existingVote.vote_type : null
       };
       
-      // Call the RPC function with explicit typing to fix the TypeScript error
+      // Call the RPC function with proper typing for the parameters
       const { error } = await supabase.rpc(
         'handle_vote',
         params
