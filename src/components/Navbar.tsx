@@ -49,6 +49,13 @@ const Navbar = () => {
             Resources
           </Link>
           
+          {isSignedIn && (
+            <Link to="/messages" className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2">
+              <MessageSquare size={18} />
+              Messages
+            </Link>
+          )}
+          
           {isSignedIn ? (
             <div className="flex items-center gap-4">
               <DropdownMenu>
@@ -78,10 +85,12 @@ const Navbar = () => {
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer">
-                      <MessageSquare className="mr-2 h-4 w-4" />
-                      <span>Messages</span>
-                    </DropdownMenuItem>
+                    <Link to="/messages">
+                      <DropdownMenuItem className="cursor-pointer">
+                        <MessageSquare className="mr-2 h-4 w-4" />
+                        <span>Messages</span>
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem className="cursor-pointer">
                       <BookmarkIcon className="mr-2 h-4 w-4" />
                       <span>Bookmarks</span>
@@ -180,6 +189,17 @@ const Navbar = () => {
               Resources
             </Link>
             
+            {isSignedIn && (
+              <Link 
+                to="/messages" 
+                className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <MessageSquare size={18} />
+                Messages
+              </Link>
+            )}
+            
             {isSignedIn ? (
               <>
                 <div className="flex items-center gap-2 pt-2 border-t">
@@ -194,7 +214,11 @@ const Navbar = () => {
                     <User size={16} />
                     <span>Profile</span>
                   </Link>
-                  <Link to="#" className="flex items-center gap-2 text-gray-700 hover:text-education-blue text-sm">
+                  <Link 
+                    to="/messages" 
+                    className="flex items-center gap-2 text-gray-700 hover:text-education-blue text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
                     <MessageSquare size={16} />
                     <span>Messages</span>
                   </Link>
