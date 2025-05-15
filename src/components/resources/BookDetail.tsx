@@ -37,9 +37,9 @@ const BookDetail = ({ book, onBack }: BookDetailProps) => {
         </Button>
       </div>
       
-      {/* Text-only book reader that adapts to screen size */}
+      {/* Text-only book reader with improved sizing */}
       <div className="w-full flex-grow mb-6">
-        <div className="relative w-full h-[calc(100vh-240px)] md:h-[calc(100vh-280px)]">
+        <div className="relative w-full h-[calc(100vh-200px)] md:h-[calc(100vh-220px)]">
           <iframe
             src={`https://archive.org/embed/${book.identifier}?ui=embed&view=TextOnly`}
             width="100%"
@@ -47,13 +47,14 @@ const BookDetail = ({ book, onBack }: BookDetailProps) => {
             frameBorder="0"
             allowFullScreen
             title="Book Reader"
-            className="rounded-lg shadow-md absolute top-0 left-0 w-full h-full"
+            className="rounded-lg shadow-md absolute top-0 left-0 w-full h-full bg-white"
             loading="eager"
+            style={{ maxWidth: "100vw" }}
           ></iframe>
         </div>
       </div>
       
-      {/* Book details below the frame */}
+      {/* Book details in a collapsed card for more reading space */}
       <Card className="w-full mb-6">
         <CardContent className="pt-6">
           <CardTitle className="mb-2">{book.title}</CardTitle>
@@ -63,7 +64,7 @@ const BookDetail = ({ book, onBack }: BookDetailProps) => {
             </div>
           )}
           {book.description && (
-            <CardDescription className="text-sm mt-2">
+            <CardDescription className="text-sm mt-2 line-clamp-3 hover:line-clamp-none">
               {book.description}
             </CardDescription>
           )}
