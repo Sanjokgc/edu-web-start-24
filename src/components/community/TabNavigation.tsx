@@ -1,27 +1,7 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PostTab } from "@/components/community/PostTab";
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  authorId: string;
-  createdAt: string;
-  upvotes: number;
-  downvotes: number;
-  comments: {
-    id: string;
-    content: string;
-    author: string;
-    authorId: string;
-    createdAt: string;
-  }[];
-  upvotedBy: string[];
-  downvotedBy: string[];
-}
+import { Post } from "@/hooks/usePostManagement";
 
 interface TabNavigationProps {
   posts: Post[];

@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from "react";
-import { Post } from "@/components/community/Post";
+import { Post as PostComponent } from "@/components/community/Post";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { Post } from "@/hooks/usePostManagement";
 
 type PostType = {
   id: string;
@@ -27,7 +27,7 @@ type CommentType = {
 };
 
 export const PostList = () => {
-  const [posts, setPosts] = useState<PostType[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -39,7 +39,7 @@ export const PostList = () => {
         const parsedPosts = savedPosts ? JSON.parse(savedPosts) : [];
         
         // Normalize posts to ensure all have required fields
-        const normalizedPosts = parsedPosts.map((post: any) => ({  // Changed type from PostType to any to avoid type conflicts during mapping
+        const normalizedPosts = parsedPosts.map((post: any) => ({
           ...post,
           upvotedBy: post.upvotedBy || [],
           downvotedBy: post.downvotedBy || [],
@@ -96,7 +96,7 @@ export const PostList = () => {
     });
   };
 
-  const addComment = (postId: string, comment: CommentType) => {
+  const addComment = (postId: string, comment: any) => {
     setPosts(currentPosts => {
       const updatedPosts = currentPosts.map(post => {
         if (post.id === postId) {
@@ -141,7 +141,7 @@ export const PostList = () => {
   return (
     <div className="space-y-6">
       {posts.map((post) => (
-        <Post 
+        <PostComponent 
           key={post.id} 
           post={post} 
           onVote={handleVote} 

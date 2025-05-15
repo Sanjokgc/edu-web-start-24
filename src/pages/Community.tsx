@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
@@ -12,6 +11,7 @@ import CommunityContent from "@/components/community/CommunityContent";
 import TopicDialog from "@/components/community/TopicDialog";
 import CreateGroupDialog from "@/components/community/CreateGroupDialog";
 import VideoModal from "@/components/community/VideoModal";
+import { Post } from "@/hooks/usePostManagement";
 
 interface Comment {
   id: string;

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { formatDistanceToNow } from "date-fns";
@@ -7,33 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowUp, ArrowDown, MessageSquare } from "lucide-react";
-
-type CommentType = {
-  id: string;
-  content: string;
-  author: string;
-  authorId: string;
-  createdAt: string;
-};
-
-type PostType = {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  authorId: string;
-  createdAt: string;
-  upvotes: number;
-  downvotes: number;
-  comments: CommentType[];
-  upvotedBy: string[];
-  downvotedBy: string[];
-};
+import { Post as PostType } from "@/hooks/usePostManagement";
 
 interface PostProps {
   post: PostType;
   onVote: (postId: string, voteType: "upvote" | "downvote") => void;
-  onAddComment: (postId: string, comment: CommentType) => void;
+  onAddComment: (postId: string, comment: any) => void;
 }
 
 export const Post = ({ post, onVote, onAddComment }: PostProps) => {

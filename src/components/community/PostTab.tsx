@@ -1,29 +1,9 @@
-
 import React from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ArrowUp, ArrowDown, MessageSquare, RefreshCcw, MoreHorizontal } from "lucide-react";
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  authorId: string;
-  createdAt: string;
-  upvotes: number;
-  downvotes: number;
-  comments: {
-    id: string;
-    content: string;
-    author: string;
-    authorId: string;
-    createdAt: string;
-  }[];
-  upvotedBy: string[];
-  downvotedBy: string[];
-}
+import { Post } from "@/hooks/usePostManagement";
 
 interface PostTabProps {
   posts: Post[];

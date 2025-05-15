@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
@@ -8,20 +7,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Image, Video, CalendarCheck, Smile, BarChart, Video as Live } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  authorId: string;
-  createdAt: string;
-  upvotes: number;
-  downvotes: number;
-  comments: any[];
-  upvotedBy: string[];
-  downvotedBy: string[];
-}
+import { Post } from "@/hooks/usePostManagement";
 
 interface PostFormProps {
   setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
