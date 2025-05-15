@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowUp, ArrowDown, MessageSquare, ThumbsUp } from "lucide-react";
+import { ArrowUp, ArrowDown, MessageSquare } from "lucide-react";
 
 type CommentType = {
   id: string;
@@ -117,7 +117,7 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
               onClick={handleUpvote} 
               variant="ghost" 
               size="sm"
-              className="flex items-center text-gray-700 hover:text-education-blue"
+              className="flex items-center text-gray-700 hover:text-blue-600"
             >
               <ArrowUp className="mr-1" size={16} />
               {post.upvotes}
@@ -126,7 +126,7 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
               onClick={handleDownvote} 
               variant="ghost" 
               size="sm"
-              className="flex items-center text-gray-700 hover:text-education-blue"
+              className="flex items-center text-gray-700 hover:text-blue-600"
             >
               <ArrowDown className="mr-1" size={16} />
               {post.downvotes}
@@ -141,15 +141,13 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
         <div className="w-full flex items-center">
           <Button 
             variant="ghost" 
-            className="flex items-center text-gray-700 hover:text-education-blue"
+            className="flex items-center text-gray-700 hover:text-blue-600"
             onClick={() => setShowComments(!showComments)}
           >
             <MessageSquare className="mr-2" size={16} />
             {post.comments.length} Comments
           </Button>
-          <div className="flex items-center ml-auto text-gray-700">
-            <ThumbsUp className="mr-1" size={16} color="#2563eb" />
-            <span className="ml-1 mr-4">{post.upvotes}</span>
+          <div className="ml-auto text-gray-700">
             <span>Comments: {post.comments.length}</span>
           </div>
         </div>
@@ -161,13 +159,13 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
                 placeholder="Write a comment..."
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                className="resize-none border-gray-200 focus:border-education-blue focus:ring-education-blue"
+                className="resize-none border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                 rows={2}
               />
               <Button 
                 type="submit" 
                 size="sm" 
-                className="bg-education-blue text-white hover:bg-blue-700"
+                className="bg-blue-600 text-white hover:bg-blue-700"
               >
                 Post Comment
               </Button>
