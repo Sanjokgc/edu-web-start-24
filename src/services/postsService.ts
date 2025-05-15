@@ -209,6 +209,7 @@ export const addVote = async (
         p_existing_vote_type: existingVote ? existingVote.vote_type : null
       };
       
+      // Fixed: Using a straightforward approach without explicit type parameters
       const { error } = await supabase.rpc('handle_vote', params);
       
       if (error) throw error;
