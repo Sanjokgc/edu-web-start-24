@@ -4,16 +4,29 @@ import { useAuth, useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { Photo, Video, CalendarCheck, Smile, BarChart, Video as Live } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const PostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const { toast } = useToast();
   const { isSignedIn } = useAuth();
   const { user } = useUser();
+
+  const handleFocus = () => {
+    setIsExpanded(true);
+  };
+
+  const handleCancel = () => {
+    setTitle("");
+    setContent("");
+    setIsExpanded(false);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,10 +39,10 @@ export const PostForm = () => {
       return;
     }
 
-    if (!title.trim() || !content.trim()) {
+    if (!content.trim()) {
       toast({
         title: "Validation Error",
-        description: "Title and content are required fields.",
+        description: "Post content is required.",
         variant: "destructive",
       });
       return;
@@ -43,7 +56,7 @@ export const PostForm = () => {
       // Create new post object
       const newPost = {
         id: Date.now().toString(),
-        title,
+        title: title.trim() || "New Post",
         content,
         author: user?.firstName || "Anonymous",
         authorId: user?.id || "guest",
@@ -66,6 +79,7 @@ export const PostForm = () => {
       setTitle("");
       setContent("");
       setIsSubmitting(false);
+      setIsExpanded(false);
       
       toast({
         title: "Success!",
@@ -75,47 +89,101 @@ export const PostForm = () => {
   };
 
   return (
-    <Card>
+    <Card className="mb-6 shadow-sm bg-white">
       <form onSubmit={handleSubmit}>
-        <CardHeader>
-          <h2 className="text-xl font-semibold">Create a New Post</h2>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-              Title
-            </label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Give your post a title"
-              className="w-full"
-              maxLength={100}
-            />
-          </div>
-          <div>
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
-              Content
-            </label>
-            <Textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Share your thoughts with the community..."
-              className="w-full min-h-[150px]"
-            />
+        <CardContent className="p-4">
+          <div className="flex gap-3">
+            <Avatar className="h-10 w-10">
+              <AvatarImage 
+                src={user?.imageUrl} 
+                alt={user?.firstName || "User"} 
+              />
+              <AvatarFallback>{user?.firstName?.[0] || "U"}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <Textarea
+                placeholder={`What's on your mind?`}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className={`border-none bg-gray-50 hover:bg-gray-100 focus:ring-0 resize-none transition-all min-h-[48px] ${isExpanded ? 'min-h-[120px]' : ''}`}
+                onFocus={handleFocus}
+              />
+              
+              {isExpanded && (
+                <Input
+                  type="text"
+                  placeholder="Add a title (optional)"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="mt-3 border-gray-200"
+                />
+              )}
+              
+              <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center gap-4 flex-wrap">
+                  <Button type="button" variant="ghost" size="sm" className="text-gray-500 hover:text-education-blue hover:bg-gray-50 p-1 rounded-full">
+                    <Photo size={18} />
+                    <span className="ml-1 text-xs sm:text-sm hidden sm:inline">Photo</span>
+                  </Button>
+                  <Button type="button" variant="ghost" size="sm" className="text-gray-500 hover:text-education-blue hover:bg-gray-50 p-1 rounded-full">
+                    <Video size={18} />
+                    <span className="ml-1 text-xs sm:text-sm hidden sm:inline">Video</span>
+                  </Button>
+                  <Button type="button" variant="ghost" size="sm" className="text-gray-500 hover:text-education-blue hover:bg-gray-50 p-1 rounded-full">
+                    <Smile size={18} />
+                    <span className="ml-1 text-xs sm:text-sm hidden sm:inline">Feeling</span>
+                  </Button>
+                  <Button type="button" variant="ghost" size="sm" className="text-gray-500 hover:text-education-blue hover:bg-gray-50 p-1 rounded-full">
+                    <BarChart size={18} />
+                    <span className="ml-1 text-xs sm:text-sm hidden sm:inline">Poll</span>
+                  </Button>
+                  <Button type="button" variant="ghost" size="sm" className="text-gray-500 hover:text-education-blue hover:bg-gray-50 p-1 rounded-full">
+                    <Live size={18} />
+                    <span className="ml-1 text-xs sm:text-sm hidden sm:inline">Live</span>
+                  </Button>
+                  <Button type="button" variant="ghost" size="sm" className="text-gray-500 hover:text-education-blue hover:bg-gray-50 p-1 rounded-full">
+                    <CalendarCheck size={18} />
+                    <span className="ml-1 text-xs sm:text-sm hidden sm:inline">Schedule</span>
+                  </Button>
+                </div>
+                
+                {isExpanded && (
+                  <div className="ml-auto flex gap-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleCancel}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      size="sm" 
+                      className="bg-education-blue hover:bg-blue-700"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Publishing..." : "Publish"}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </CardContent>
-        <CardFooter>
-          <Button 
-            type="submit" 
-            className="w-full md:w-auto bg-education-blue hover:bg-blue-700"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Publishing..." : "Publish Post"}
-          </Button>
-        </CardFooter>
+        
+        {!isExpanded && (
+          <CardFooter className="flex justify-end px-4 pt-0 pb-4">
+            <Button 
+              type="submit" 
+              className="bg-education-blue hover:bg-blue-700 text-white"
+              disabled={isSubmitting || !content.trim()}
+            >
+              {isSubmitting ? "Publishing..." : "Publish"}
+            </Button>
+          </CardFooter>
+        )}
       </form>
     </Card>
   );
