@@ -21,20 +21,6 @@ interface Comment {
   createdAt: string;
 }
 
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  authorId: string;
-  createdAt: string;
-  upvotes: number;
-  downvotes: number;
-  comments: Comment[];
-  upvotedBy: string[];
-  downvotedBy: string[];
-}
-
 const Community = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("all-posts");
