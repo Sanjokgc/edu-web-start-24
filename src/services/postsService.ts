@@ -177,6 +177,7 @@ export const addComment = async (
   }
 };
 
+// Define the interface for vote parameters to match the expected parameters for the handle_vote RPC
 interface VoteParams {
   p_post_id: string;
   p_user_id: string; 
@@ -201,7 +202,7 @@ export const addVote = async (
     if (fetchError) throw fetchError;
 
     const transaction = async () => {
-      // Use type assertion for the parameters to avoid TypeScript errors
+      // Create params object matching the interface
       const params: VoteParams = {
         p_post_id: postId,
         p_user_id: userId, 
@@ -209,7 +210,7 @@ export const addVote = async (
         p_existing_vote_type: existingVote ? existingVote.vote_type : null
       };
       
-      // Fixed: Using a straightforward approach without explicit type parameters
+      // Call the RPC without specifying generic types - let TypeScript infer them
       const { error } = await supabase.rpc('handle_vote', params);
       
       if (error) throw error;
