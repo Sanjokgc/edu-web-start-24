@@ -9,7 +9,25 @@ import { useToast } from "@/hooks/use-toast";
 import { Image, Video, CalendarCheck, Smile, BarChart, Video as Live } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export const PostForm = () => {
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  authorId: string;
+  createdAt: string;
+  upvotes: number;
+  downvotes: number;
+  comments: any[];
+  upvotedBy: string[];
+  downvotedBy: string[];
+}
+
+interface PostFormProps {
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+}
+
+export const PostForm = ({ setPosts }: PostFormProps) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,7 +48,7 @@ export const PostForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isSignedIn) {
+    if (!isSignedIn || !user) {
       toast({
         title: "Authentication Required",
         description: "You need to sign in to create a post.",
@@ -50,45 +68,43 @@ export const PostForm = () => {
 
     setIsSubmitting(true);
     
-    // In a real app, this would call an API to save the post
-    // For now, we'll simulate the process with a setTimeout
-    setTimeout(() => {
-      // Create new post object
-      const newPost = {
-        id: Date.now().toString(),
-        title: title.trim() || "New Post",
-        content,
-        author: user?.firstName || "Anonymous",
-        authorId: user?.id || "guest",
-        createdAt: new Date().toISOString(),
-        upvotes: 0,
-        downvotes: 0,
-        comments: [],
-      };
-      
-      // Get existing posts from localStorage or initialize empty array
-      const existingPosts = JSON.parse(localStorage.getItem("communityPosts") || "[]");
-      
-      // Add new post to beginning of array
-      const updatedPosts = [newPost, ...existingPosts];
-      
-      // Save updated posts back to localStorage
-      localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
-      
-      // Reset form
-      setTitle("");
-      setContent("");
-      setIsSubmitting(false);
-      setIsExpanded(false);
-      
-      toast({
-        title: "Success!",
-        description: "Your post has been published.",
-      });
-      
-      // Reload the page to show the new post
-      window.location.reload();
-    }, 1000);
+    // Create new post object
+    const newPost = {
+      id: Date.now().toString(),
+      title: title.trim() || "New Post",
+      content,
+      author: user.firstName || user.username || "Anonymous",
+      authorId: user.id,
+      createdAt: new Date().toISOString(),
+      upvotes: 0,
+      downvotes: 0,
+      comments: [],
+      upvotedBy: [],
+      downvotedBy: []
+    };
+    
+    // Get existing posts from localStorage or initialize empty array
+    const existingPosts = JSON.parse(localStorage.getItem("communityPosts") || "[]");
+    
+    // Add new post to beginning of array
+    const updatedPosts = [newPost, ...existingPosts];
+    
+    // Save updated posts back to localStorage
+    localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
+    
+    // Update posts state
+    setPosts(updatedPosts);
+    
+    // Reset form
+    setTitle("");
+    setContent("");
+    setIsSubmitting(false);
+    setIsExpanded(false);
+    
+    toast({
+      title: "Success!",
+      description: "Your post has been published.",
+    });
   };
 
   return (
@@ -99,9 +115,9 @@ export const PostForm = () => {
             <Avatar className="h-10 w-10">
               <AvatarImage 
                 src={user?.imageUrl} 
-                alt={user?.firstName || "User"} 
+                alt={user?.firstName || user?.username || "User"} 
               />
-              <AvatarFallback>{user?.firstName?.[0] || "U"}</AvatarFallback>
+              <AvatarFallback>{(user?.firstName?.[0] || user?.username?.[0] || "U").toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <Textarea

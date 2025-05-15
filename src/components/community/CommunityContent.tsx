@@ -1,10 +1,11 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { PostForm } from "@/components/community/PostForm";
 import { SearchBar } from "@/components/community/SearchBar";
 import { TabNavigation } from "@/components/community/TabNavigation";
 import { Post } from "@/components/community/Post";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth, useUser } from "@clerk/clerk-react";
 
 interface Comment {
   id: string;
@@ -24,6 +25,8 @@ interface Post {
   upvotes: number;
   downvotes: number;
   comments: Comment[];
+  upvotedBy: string[];
+  downvotedBy: string[];
 }
 
 interface CommunityContentProps {
@@ -31,6 +34,7 @@ interface CommunityContentProps {
   activeTab: string;
   setActiveTab: React.Dispatch<React.SetStateAction<string>>;
   setVideoModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
 }
 
 export const CommunityContent: React.FC<CommunityContentProps> = ({
@@ -38,29 +42,95 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
   activeTab,
   setActiveTab,
   setVideoModalOpen,
+  setPosts,
 }) => {
   const { toast } = useToast();
+  const { isSignedIn } = useAuth();
+  const { user } = useUser();
 
   const handleVote = (postId: string, voteType: "upvote" | "downvote") => {
-    // Get existing posts from localStorage
-    const storedPosts = localStorage.getItem("communityPosts");
-    if (!storedPosts) return;
+    if (!isSignedIn || !user) {
+      toast({
+        title: "Authentication Required",
+        description: "You need to sign in to vote on posts.",
+        variant: "destructive",
+      });
+      return;
+    }
     
-    // Parse and update the posts
-    const parsedPosts = JSON.parse(storedPosts);
-    const updatedPosts = parsedPosts.map((post: Post) => {
-      if (post.id === postId) {
-        if (voteType === "upvote") {
-          return { ...post, upvotes: post.upvotes + 1 };
-        } else {
-          return { ...post, downvotes: post.downvotes + 1 };
+    const userId = user.id;
+    
+    setPosts(prevPosts => {
+      const updatedPosts = prevPosts.map(post => {
+        if (post.id === postId) {
+          // Check if user has already voted
+          const hasUpvoted = post.upvotedBy.includes(userId);
+          const hasDownvoted = post.downvotedBy.includes(userId);
+          
+          if (voteType === "upvote") {
+            // If already upvoted, remove the vote
+            if (hasUpvoted) {
+              return {
+                ...post,
+                upvotes: post.upvotes - 1,
+                upvotedBy: post.upvotedBy.filter(id => id !== userId)
+              };
+            }
+            
+            // If previously downvoted, remove downvote and add upvote
+            if (hasDownvoted) {
+              return {
+                ...post,
+                upvotes: post.upvotes + 1,
+                downvotes: post.downvotes - 1,
+                upvotedBy: [...post.upvotedBy, userId],
+                downvotedBy: post.downvotedBy.filter(id => id !== userId)
+              };
+            }
+            
+            // Add new upvote
+            return {
+              ...post,
+              upvotes: post.upvotes + 1,
+              upvotedBy: [...post.upvotedBy, userId]
+            };
+          } else {
+            // If already downvoted, remove the vote
+            if (hasDownvoted) {
+              return {
+                ...post,
+                downvotes: post.downvotes - 1,
+                downvotedBy: post.downvotedBy.filter(id => id !== userId)
+              };
+            }
+            
+            // If previously upvoted, remove upvote and add downvote
+            if (hasUpvoted) {
+              return {
+                ...post,
+                downvotes: post.downvotes + 1,
+                upvotes: post.upvotes - 1,
+                downvotedBy: [...post.downvotedBy, userId],
+                upvotedBy: post.upvotedBy.filter(id => id !== userId)
+              };
+            }
+            
+            // Add new downvote
+            return {
+              ...post,
+              downvotes: post.downvotes + 1,
+              downvotedBy: [...post.downvotedBy, userId]
+            };
+          }
         }
-      }
-      return post;
+        return post;
+      });
+      
+      // Save to localStorage for persistence between sessions
+      localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
+      
+      return updatedPosts;
     });
-    
-    // Save back to localStorage
-    localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
     
     // Display success message
     toast({
@@ -70,24 +140,31 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
   };
 
   const addComment = (postId: string, comment: Comment) => {
-    // Get existing posts from localStorage
-    const storedPosts = localStorage.getItem("communityPosts");
-    if (!storedPosts) return;
+    if (!isSignedIn || !user) {
+      toast({
+        title: "Authentication Required",
+        description: "You need to sign in to comment.",
+        variant: "destructive",
+      });
+      return;
+    }
     
-    // Parse and update the posts
-    const parsedPosts = JSON.parse(storedPosts);
-    const updatedPosts = parsedPosts.map((post: Post) => {
-      if (post.id === postId) {
-        return { 
-          ...post, 
-          comments: [comment, ...post.comments]
-        };
-      }
-      return post;
+    setPosts(prevPosts => {
+      const updatedPosts = prevPosts.map(post => {
+        if (post.id === postId) {
+          return { 
+            ...post, 
+            comments: [comment, ...post.comments]
+          };
+        }
+        return post;
+      });
+      
+      // Save to localStorage for persistence
+      localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
+      
+      return updatedPosts;
     });
-    
-    // Save back to localStorage
-    localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
     
     // Display success message
     toast({
@@ -102,7 +179,7 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
         <SearchBar />
       </div>
       
-      <PostForm />
+      <PostForm setPosts={setPosts} />
       
       <TabNavigation 
         posts={posts}

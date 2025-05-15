@@ -31,6 +31,8 @@ interface Post {
   upvotes: number;
   downvotes: number;
   comments: Comment[];
+  upvotedBy: string[];
+  downvotedBy: string[];
 }
 
 const Community = () => {
@@ -58,7 +60,16 @@ const Community = () => {
       try {
         const storedPosts = localStorage.getItem("communityPosts");
         if (storedPosts) {
-          setPosts(JSON.parse(storedPosts));
+          const parsedPosts = JSON.parse(storedPosts);
+          // Ensure all posts have upvotedBy and downvotedBy arrays
+          const updatedPosts = parsedPosts.map((post: any) => ({
+            ...post,
+            upvotedBy: post.upvotedBy || [],
+            downvotedBy: post.downvotedBy || []
+          }));
+          setPosts(updatedPosts);
+          // Update localStorage with the normalized data
+          localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
         }
       } catch (error) {
         console.error("Failed to load posts:", error);
@@ -103,6 +114,7 @@ const Community = () => {
             {/* Main Content */}
             <CommunityContent 
               posts={posts} 
+              setPosts={setPosts}
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               setVideoModalOpen={setVideoModalOpen}

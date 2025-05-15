@@ -26,6 +26,8 @@ type PostType = {
   upvotes: number;
   downvotes: number;
   comments: CommentType[];
+  upvotedBy: string[];
+  downvotedBy: string[];
 };
 
 interface PostProps {
@@ -40,6 +42,9 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
   const { isSignedIn } = useAuth();
   const { user } = useUser();
   const { toast } = useToast();
+  
+  const hasUserUpvoted = user && post.upvotedBy.includes(user.id);
+  const hasUserDownvoted = user && post.downvotedBy.includes(user.id);
 
   const handleUpvote = () => {
     if (!isSignedIn) {
@@ -68,7 +73,7 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isSignedIn) {
+    if (!isSignedIn || !user) {
       toast({
         title: "Authentication Required",
         description: "You need to sign in to comment.",
@@ -89,8 +94,8 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
     const newComment = {
       id: Date.now().toString(),
       content: commentText,
-      author: user?.firstName || "Anonymous",
-      authorId: user?.id || "guest",
+      author: user.firstName || user.username || "Anonymous",
+      authorId: user.id,
       createdAt: new Date().toISOString(),
     };
     
@@ -117,7 +122,7 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
               onClick={handleUpvote} 
               variant="ghost" 
               size="sm"
-              className="flex items-center text-gray-700 hover:text-blue-600"
+              className={`flex items-center ${hasUserUpvoted ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'}`}
             >
               <ArrowUp className="mr-1" size={16} />
               {post.upvotes}
@@ -126,7 +131,7 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
               onClick={handleDownvote} 
               variant="ghost" 
               size="sm"
-              className="flex items-center text-gray-700 hover:text-blue-600"
+              className={`flex items-center ${hasUserDownvoted ? 'text-red-600' : 'text-gray-700 hover:text-red-600'}`}
             >
               <ArrowDown className="mr-1" size={16} />
               {post.downvotes}
