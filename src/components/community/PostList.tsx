@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from "react";
 import { Post as PostComponent } from "@/components/community/Post";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { Post } from "@/hooks/usePostManagement";
+import { Post, fetchPosts, subscribeToPostChanges } from "@/services/postsService";
 
 export const PostList = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -10,38 +11,10 @@ export const PostList = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load ALL posts from localStorage
-    const loadPosts = () => {
+    const loadPosts = async () => {
       try {
-        const savedPosts = localStorage.getItem("communityPosts");
-        const parsedPosts = savedPosts ? JSON.parse(savedPosts) : [];
-        
-        // Filter out posts older than 30 days
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        
-        const filteredPosts = parsedPosts.filter((post: Post) => {
-          const postDate = new Date(post.createdAt);
-          return postDate > thirtyDaysAgo;
-        });
-        
-        // Normalize posts to ensure all have required fields
-        const normalizedPosts = filteredPosts.map((post: any) => ({
-          ...post,
-          upvotedBy: post.upvotedBy || [],
-          downvotedBy: post.downvotedBy || [],
-          comments: post.comments || []
-        }));
-        
-        // Sort posts by creation date (newest first)
-        normalizedPosts.sort((a: Post, b: Post) => 
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-        
-        setPosts(normalizedPosts);
-        
-        // Update localStorage with filtered posts
-        localStorage.setItem("communityPosts", JSON.stringify(normalizedPosts));
+        const fetchedPosts = await fetchPosts();
+        setPosts(fetchedPosts);
       } catch (error) {
         toast({
           title: "Error",
@@ -53,62 +26,17 @@ export const PostList = () => {
       }
     };
 
-    // Simulate network request
-    setTimeout(() => {
-      loadPosts();
-    }, 800);
+    loadPosts();
     
-    // Listen for storage events (when other users/tabs update posts)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "communityPosts") {
-        loadPosts();
-      }
-    };
+    // Subscribe to real-time updates
+    const subscription = subscribeToPostChanges((updatedPosts) => {
+      setPosts(updatedPosts);
+    });
     
-    window.addEventListener("storage", handleStorageChange);
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
+      subscription.unsubscribe();
     };
   }, [toast]);
-
-  const handleVote = (postId: string, voteType: "upvote" | "downvote") => {
-    setPosts(currentPosts => {
-      const updatedPosts = currentPosts.map(post => {
-        if (post.id === postId) {
-          if (voteType === "upvote") {
-            return { ...post, upvotes: post.upvotes + 1 };
-          } else {
-            return { ...post, downvotes: post.downvotes + 1 };
-          }
-        }
-        return post;
-      });
-      
-      // Update localStorage
-      localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
-      
-      return updatedPosts;
-    });
-  };
-
-  const addComment = (postId: string, comment: any) => {
-    setPosts(currentPosts => {
-      const updatedPosts = currentPosts.map(post => {
-        if (post.id === postId) {
-          return { 
-            ...post, 
-            comments: [comment, ...post.comments]
-          };
-        }
-        return post;
-      });
-      
-      // Update localStorage
-      localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
-      
-      return updatedPosts;
-    });
-  };
 
   if (loading) {
     return (
@@ -138,9 +66,7 @@ export const PostList = () => {
       {posts.map((post) => (
         <PostComponent 
           key={post.id} 
-          post={post} 
-          onVote={handleVote} 
-          onAddComment={addComment}
+          post={post}
         />
       ))}
     </div>

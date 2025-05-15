@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
@@ -11,15 +12,8 @@ import CommunityContent from "@/components/community/CommunityContent";
 import TopicDialog from "@/components/community/TopicDialog";
 import CreateGroupDialog from "@/components/community/CreateGroupDialog";
 import VideoModal from "@/components/community/VideoModal";
-import { Post } from "@/hooks/usePostManagement";
-
-interface Comment {
-  id: string;
-  content: string;
-  author: string;
-  authorId: string;
-  createdAt: string;
-}
+import { Post } from "@/services/postsService";
+import { fetchPosts, subscribeToPostChanges } from "@/services/postsService";
 
 const Community = () => {
   const { toast } = useToast();
@@ -39,40 +33,12 @@ const Community = () => {
     { id: 6, name: "Language Tests", icon: "language", color: "amber" }
   ]);
   
-  // Load ALL posts from localStorage on component mount
   useEffect(() => {
-    const fetchPosts = () => {
+    const loadPosts = async () => {
       setLoading(true);
       try {
-        const storedPosts = localStorage.getItem("communityPosts");
-        if (storedPosts) {
-          const parsedPosts = JSON.parse(storedPosts);
-          
-          // Filter out posts older than 30 days
-          const thirtyDaysAgo = new Date();
-          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-          
-          const filteredPosts = parsedPosts.filter((post: Post) => {
-            const postDate = new Date(post.createdAt);
-            return postDate > thirtyDaysAgo;
-          });
-          
-          // Ensure all posts have upvotedBy and downvotedBy arrays
-          const updatedPosts = filteredPosts.map((post: any) => ({
-            ...post,
-            upvotedBy: post.upvotedBy || [],
-            downvotedBy: post.downvotedBy || []
-          }));
-          
-          // Sort posts by creation date (newest first)
-          updatedPosts.sort((a: Post, b: Post) => 
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-          
-          setPosts(updatedPosts);
-          // Update localStorage with the normalized and filtered data
-          localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
-        }
+        const data = await fetchPosts();
+        setPosts(data);
       } catch (error) {
         console.error("Failed to load posts:", error);
         toast({
@@ -85,19 +51,16 @@ const Community = () => {
       }
     };
     
-    fetchPosts();
+    loadPosts();
     
-    // Set up event listener for storage changes
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "communityPosts") {
-        fetchPosts();
-      }
-    };
+    // Set up real-time subscription
+    const subscription = subscribeToPostChanges((updatedPosts) => {
+      setPosts(updatedPosts);
+    });
     
-    window.addEventListener("storage", handleStorageChange);
-    
+    // Cleanup subscription on unmount
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
+      subscription.unsubscribe();
     };
   }, [toast]);
 

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Image, Video, CalendarCheck, Smile, BarChart, Video as Live } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Post } from "@/hooks/usePostManagement";
+import { createPost } from "@/services/postsService";
+import type { Post } from "@/services/postsService";
 
 interface PostFormProps {
   setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
@@ -34,9 +36,9 @@ export const PostForm = ({ setPosts }: PostFormProps) => {
 
   /**
    * Handles form submission and creates a new post that will be visible to all community users
-   * Saves the post to Clerk's database (currently simulated with localStorage)
+   * Uses Supabase for real-time updates
    */
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isSignedIn || !user) {
       toast({
@@ -58,43 +60,35 @@ export const PostForm = ({ setPosts }: PostFormProps) => {
 
     setIsSubmitting(true);
     
-    // Create new post object
-    const newPost = {
-      id: Date.now().toString(),
-      title: title.trim() || "New Post",
-      content,
-      author: user.firstName || user.username || "Anonymous",
-      authorId: user.id,
-      createdAt: new Date().toISOString(),
-      upvotes: 0,
-      downvotes: 0,
-      comments: [],
-      upvotedBy: [],
-      downvotedBy: []
-    };
-    
-    // Get existing posts from localStorage or initialize empty array
-    const existingPosts = JSON.parse(localStorage.getItem("communityPosts") || "[]");
-    
-    // Add new post to beginning of array
-    const updatedPosts = [newPost, ...existingPosts];
-    
-    // Save updated posts back to Clerk's database (simulated with localStorage)
-    localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
-    
-    // Update posts state
-    setPosts(updatedPosts);
-    
-    // Reset form
-    setTitle("");
-    setContent("");
-    setIsSubmitting(false);
-    setIsExpanded(false);
-    
-    toast({
-      title: "Success!",
-      description: "Your post has been published and is now visible to all community members.",
-    });
+    try {
+      await createPost({
+        title: title.trim() || "New Post",
+        content,
+        author: user.firstName || user.username || "Anonymous",
+        authorId: user.id,
+      });
+      
+      // Don't need to update posts state here as the real-time subscription will handle it
+      
+      // Reset form
+      setTitle("");
+      setContent("");
+      setIsExpanded(false);
+      
+      toast({
+        title: "Success!",
+        description: "Your post has been published and is now visible to all community members.",
+      });
+    } catch (error) {
+      console.error("Error creating post:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create post. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

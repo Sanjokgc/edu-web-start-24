@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { formatDistanceToNow } from "date-fns";
@@ -6,17 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowUp, ArrowDown, MessageSquare } from "lucide-react";
-import { Post as PostType } from "@/hooks/usePostManagement";
+import { Post as PostType } from "@/services/postsService";
+import { addComment, addVote } from "@/services/postsService";
 
 interface PostProps {
   post: PostType;
-  onVote: (postId: string, voteType: "upvote" | "downvote") => void;
-  onAddComment: (postId: string, comment: any) => void;
+  onVote?: (postId: string, voteType: "upvote" | "downvote") => void;
+  onAddComment?: (postId: string, comment: any) => void;
 }
 
 export const Post = ({ post, onVote, onAddComment }: PostProps) => {
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { isSignedIn } = useAuth();
   const { user } = useUser();
   const { toast } = useToast();
@@ -24,8 +27,8 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
   const hasUserUpvoted = user && post.upvotedBy.includes(user.id);
   const hasUserDownvoted = user && post.downvotedBy.includes(user.id);
 
-  const handleUpvote = () => {
-    if (!isSignedIn) {
+  const handleUpvote = async () => {
+    if (!isSignedIn || !user) {
       toast({
         title: "Authentication Required",
         description: "You need to sign in to vote on posts.",
@@ -33,11 +36,23 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
       });
       return;
     }
-    onVote(post.id, "upvote");
+
+    try {
+      await addVote(post.id, user.id, "upvote");
+      // The real-time subscription will update the UI
+      if (onVote) onVote(post.id, "upvote");
+    } catch (error) {
+      console.error("Error upvoting post:", error);
+      toast({
+        title: "Error",
+        description: "Failed to upvote post. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDownvote = () => {
-    if (!isSignedIn) {
+  const handleDownvote = async () => {
+    if (!isSignedIn || !user) {
       toast({
         title: "Authentication Required",
         description: "You need to sign in to vote on posts.",
@@ -45,10 +60,22 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
       });
       return;
     }
-    onVote(post.id, "downvote");
+
+    try {
+      await addVote(post.id, user.id, "downvote");
+      // The real-time subscription will update the UI
+      if (onVote) onVote(post.id, "downvote");
+    } catch (error) {
+      console.error("Error downvoting post:", error);
+      toast({
+        title: "Error",
+        description: "Failed to downvote post. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleSubmitComment = (e: React.FormEvent) => {
+  const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!isSignedIn || !user) {
@@ -68,17 +95,30 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
       });
       return;
     }
+
+    setIsSubmitting(true);
     
-    const newComment = {
-      id: Date.now().toString(),
-      content: commentText,
-      author: user.firstName || user.username || "Anonymous",
-      authorId: user.id,
-      createdAt: new Date().toISOString(),
-    };
-    
-    onAddComment(post.id, newComment);
-    setCommentText("");
+    try {
+      const newComment = await addComment(post.id, {
+        content: commentText,
+        author: user.firstName || user.username || "Anonymous",
+        authorId: user.id,
+      });
+      
+      // The real-time subscription will update the UI
+      if (onAddComment) onAddComment(post.id, newComment);
+      
+      setCommentText("");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add comment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const formattedDate = formatDistanceToNow(new Date(post.createdAt), { addSuffix: true });
@@ -149,8 +189,9 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
                 type="submit" 
                 size="sm" 
                 className="bg-blue-600 text-white hover:bg-blue-700"
+                disabled={isSubmitting}
               >
-                Post Comment
+                {isSubmitting ? "Posting..." : "Post Comment"}
               </Button>
             </form>
             
