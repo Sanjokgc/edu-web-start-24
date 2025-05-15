@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { User } from "@clerk/clerk-react";
 import { toast } from "@/hooks/use-toast";
 
 export interface Message {
@@ -50,7 +49,8 @@ export const getConversations = async (userId: string): Promise<Conversation[]> 
 
     const conversationIds = participantData.map(p => p.conversation_id);
 
-    const { data: conversations, error: conversationsError } = await supabase
+    // Use any to bypass TypeScript checking for tables that don't exist in the generated types
+    const { data: conversations, error: conversationsError } = await (supabase as any)
       .from('conversations')
       .select(`
         *,
@@ -84,7 +84,7 @@ export const getConversationWithMessages = async (conversationId: string): Promi
 }> => {
   try {
     // Get the conversation
-    const { data: conversation, error: conversationError } = await supabase
+    const { data: conversation, error: conversationError } = await (supabase as any)
       .from('conversations')
       .select(`
         *,
@@ -100,7 +100,7 @@ export const getConversationWithMessages = async (conversationId: string): Promi
     if (conversationError) throw conversationError;
 
     // Get messages for the conversation
-    const { data: messages, error: messagesError } = await supabase
+    const { data: messages, error: messagesError } = await (supabase as any)
       .from('messages')
       .select('*')
       .eq('conversation_id', conversationId)
@@ -127,7 +127,7 @@ export const getConversationWithMessages = async (conversationId: string): Promi
 export const createConversation = async (currentUserId: string, otherUserId: string): Promise<string | null> => {
   try {
     // Check if conversation already exists
-    const { data: existingConversations } = await supabase
+    const { data: existingConversations } = await (supabase as any)
       .from('conversation_participants')
       .select('conversation_id')
       .eq('user_id', currentUserId);
@@ -135,7 +135,7 @@ export const createConversation = async (currentUserId: string, otherUserId: str
     if (existingConversations && existingConversations.length > 0) {
       const conversationIds = existingConversations.map(c => c.conversation_id);
       
-      const { data: sharedConversations } = await supabase
+      const { data: sharedConversations } = await (supabase as any)
         .from('conversation_participants')
         .select('conversation_id')
         .eq('user_id', otherUserId)
@@ -148,7 +148,7 @@ export const createConversation = async (currentUserId: string, otherUserId: str
     }
 
     // Create a new conversation
-    const { data: conversation, error: conversationError } = await supabase
+    const { data: conversation, error: conversationError } = await (supabase as any)
       .from('conversations')
       .insert({})
       .select()
@@ -162,7 +162,7 @@ export const createConversation = async (currentUserId: string, otherUserId: str
       { conversation_id: conversation.id, user_id: otherUserId }
     ];
 
-    const { error: participantsError } = await supabase
+    const { error: participantsError } = await (supabase as any)
       .from('conversation_participants')
       .insert(participants);
 
@@ -183,7 +183,7 @@ export const createConversation = async (currentUserId: string, otherUserId: str
 // Send a message in a conversation
 export const sendMessage = async (conversationId: string, senderId: string, content: string): Promise<Message | null> => {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('messages')
       .insert({
         conversation_id: conversationId,
@@ -209,7 +209,7 @@ export const sendMessage = async (conversationId: string, senderId: string, cont
 // Mark messages as read
 export const markMessagesAsRead = async (conversationId: string, userId: string): Promise<void> => {
   try {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('messages')
       .update({ read: true })
       .eq('conversation_id', conversationId)
@@ -227,7 +227,7 @@ export const subscribeToMessages = (
   conversationId: string,
   callback: (message: Message) => void
 ) => {
-  const subscription = supabase
+  const subscription = (supabase as any)
     .channel('messages-channel')
     .on(
       'postgres_changes',
@@ -237,7 +237,7 @@ export const subscribeToMessages = (
         table: 'messages',
         filter: `conversation_id=eq.${conversationId}`
       },
-      (payload) => {
+      (payload: any) => {
         const newMessage = payload.new as Message;
         callback(newMessage);
       }
@@ -252,7 +252,7 @@ export const subscribeToConversations = (
   userId: string,
   callback: () => void
 ) => {
-  const subscription = supabase
+  const subscription = (supabase as any)
     .channel('conversations-channel')
     .on(
       'postgres_changes',

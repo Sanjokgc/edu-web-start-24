@@ -1,9 +1,9 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { useUser } from "@clerk/clerk-react";
 import Layout from "@/components/Layout";
 import { MessagesContent } from "@/components/messages/MessagesContent";
-import { AuthRoute } from "@/components/AuthRoute";
+import AuthRoute from "@/components/AuthRoute"; // Fixed import statement
 import { NoMessages } from "@/components/messages/NoMessages";
 
 const Messages = () => {
