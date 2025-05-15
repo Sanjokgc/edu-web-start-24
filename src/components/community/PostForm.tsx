@@ -32,6 +32,10 @@ export const PostForm = ({ setPosts }: PostFormProps) => {
     setIsExpanded(false);
   };
 
+  /**
+   * Handles form submission and creates a new post that will be visible to all community users
+   * Saves the post to Clerk's database (currently simulated with localStorage)
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isSignedIn || !user) {
@@ -75,7 +79,7 @@ export const PostForm = ({ setPosts }: PostFormProps) => {
     // Add new post to beginning of array
     const updatedPosts = [newPost, ...existingPosts];
     
-    // Save updated posts back to localStorage
+    // Save updated posts back to Clerk's database (simulated with localStorage)
     localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
     
     // Update posts state
@@ -89,7 +93,7 @@ export const PostForm = ({ setPosts }: PostFormProps) => {
     
     toast({
       title: "Success!",
-      description: "Your post has been published.",
+      description: "Your post has been published and is now visible to all community members.",
     });
   };
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Book, LogIn, LogOut, User, Users, Settings, BookmarkIcon, MessageSquare, FileEdit } from "lucide-react";
@@ -35,9 +34,6 @@ const Navbar = () => {
           </Link>
           <Link to="#features" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
             Features
-          </Link>
-          <Link to="#testimonials" className="text-gray-700 hover:text-education-blue font-medium transition-colors">
-            Testimonials
           </Link>
           <Link to="/community" className="text-gray-700 hover:text-education-blue font-medium transition-colors flex items-center gap-2">
             <Users size={18} />
@@ -153,13 +149,6 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Features
-            </a>
-            <a 
-              href="#testimonials" 
-              className="text-gray-700 hover:text-education-blue font-medium transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Testimonials
             </a>
             <Link 
               to="/community" 

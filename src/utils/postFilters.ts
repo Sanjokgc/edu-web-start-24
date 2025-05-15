@@ -1,4 +1,3 @@
-
 import { Post } from "@/hooks/usePostManagement";
 
 export const filterPostsByTab = (posts: Post[], tabValue: string) => {

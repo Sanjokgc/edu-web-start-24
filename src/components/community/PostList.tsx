@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Post as PostComponent } from "@/components/community/Post";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,8 +16,17 @@ export const PostList = () => {
         const savedPosts = localStorage.getItem("communityPosts");
         const parsedPosts = savedPosts ? JSON.parse(savedPosts) : [];
         
+        // Filter out posts older than 30 days
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        const filteredPosts = parsedPosts.filter((post: Post) => {
+          const postDate = new Date(post.createdAt);
+          return postDate > thirtyDaysAgo;
+        });
+        
         // Normalize posts to ensure all have required fields
-        const normalizedPosts = parsedPosts.map((post: any) => ({
+        const normalizedPosts = filteredPosts.map((post: any) => ({
           ...post,
           upvotedBy: post.upvotedBy || [],
           downvotedBy: post.downvotedBy || [],
@@ -31,6 +39,9 @@ export const PostList = () => {
         );
         
         setPosts(normalizedPosts);
+        
+        // Update localStorage with filtered posts
+        localStorage.setItem("communityPosts", JSON.stringify(normalizedPosts));
       } catch (error) {
         toast({
           title: "Error",

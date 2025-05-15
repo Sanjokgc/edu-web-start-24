@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth, useUser } from "@clerk/clerk-react";
@@ -30,6 +29,10 @@ export const usePostManagement = (posts: Post[], setPosts: React.Dispatch<React.
   const { isSignedIn } = useAuth();
   const { user } = useUser();
 
+  /**
+   * Handles voting on posts and saves the updated posts to Clerk's database
+   * (Currently simulated with localStorage until Clerk backend integration is complete)
+   */
   const handleVote = (postId: string, voteType: "upvote" | "downvote") => {
     if (!isSignedIn || !user) {
       toast({
@@ -108,7 +111,7 @@ export const usePostManagement = (posts: Post[], setPosts: React.Dispatch<React.
         return post;
       });
       
-      // Save to localStorage for persistence between sessions
+      // Save to Clerk's database (simulated with localStorage for now)
       localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
       
       return updatedPosts;
@@ -121,6 +124,10 @@ export const usePostManagement = (posts: Post[], setPosts: React.Dispatch<React.
     });
   };
 
+  /**
+   * Adds a comment to a post and saves the updated posts to Clerk's database
+   * (Currently simulated with localStorage until Clerk backend integration is complete)
+   */
   const addComment = (postId: string, comment: Comment) => {
     if (!isSignedIn || !user) {
       toast({
@@ -142,7 +149,7 @@ export const usePostManagement = (posts: Post[], setPosts: React.Dispatch<React.
         return post;
       });
       
-      // Save to localStorage for persistence
+      // Save to Clerk's database (simulated with localStorage for now)
       localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
       
       return updatedPosts;

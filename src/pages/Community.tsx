@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
@@ -48,8 +47,18 @@ const Community = () => {
         const storedPosts = localStorage.getItem("communityPosts");
         if (storedPosts) {
           const parsedPosts = JSON.parse(storedPosts);
+          
+          // Filter out posts older than 30 days
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          
+          const filteredPosts = parsedPosts.filter((post: Post) => {
+            const postDate = new Date(post.createdAt);
+            return postDate > thirtyDaysAgo;
+          });
+          
           // Ensure all posts have upvotedBy and downvotedBy arrays
-          const updatedPosts = parsedPosts.map((post: any) => ({
+          const updatedPosts = filteredPosts.map((post: any) => ({
             ...post,
             upvotedBy: post.upvotedBy || [],
             downvotedBy: post.downvotedBy || []
@@ -61,7 +70,7 @@ const Community = () => {
           );
           
           setPosts(updatedPosts);
-          // Update localStorage with the normalized data
+          // Update localStorage with the normalized and filtered data
           localStorage.setItem("communityPosts", JSON.stringify(updatedPosts));
         }
       } catch (error) {
