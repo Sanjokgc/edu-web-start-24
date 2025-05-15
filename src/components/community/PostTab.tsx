@@ -21,6 +21,8 @@ interface Post {
     authorId: string;
     createdAt: string;
   }[];
+  upvotedBy: string[];
+  downvotedBy: string[];
 }
 
 interface PostTabProps {

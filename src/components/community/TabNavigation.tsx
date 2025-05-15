@@ -19,6 +19,8 @@ interface Post {
     authorId: string;
     createdAt: string;
   }[];
+  upvotedBy: string[];
+  downvotedBy: string[];
 }
 
 interface TabNavigationProps {
@@ -32,6 +34,22 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   activeTab,
   setActiveTab,
 }) => {
+  // Filter posts based on tab
+  const getTrendingPosts = () => {
+    return [...posts].sort((a, b) => 
+      (b.upvotes + b.comments.length) - (a.upvotes + a.comments.length)
+    ).slice(0, 10); // Just get top 10 for trending
+  };
+
+  const getDiscussionPosts = () => {
+    return [...posts].sort((a, b) => b.comments.length - a.comments.length);
+  };
+
+  const getMediaPosts = () => {
+    // In a real app, you'd filter for posts containing media
+    return posts;
+  };
+
   return (
     <Tabs defaultValue="all-posts" className="mb-4" onValueChange={setActiveTab}>
       <TabsList className="bg-transparent border-b border-gray-200 w-full justify-start gap-2 h-auto p-0">
@@ -66,15 +84,15 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
       </TabsContent>
 
       <TabsContent value="trending-post" className="mt-4">
-        <PostTab posts={[]} tabValue="trending-post" />
+        <PostTab posts={getTrendingPosts()} tabValue="trending-post" />
       </TabsContent>
 
       <TabsContent value="discussions" className="mt-4">
-        <PostTab posts={[]} tabValue="discussions" />
+        <PostTab posts={getDiscussionPosts()} tabValue="discussions" />
       </TabsContent>
 
       <TabsContent value="media-pics" className="mt-4">
-        <PostTab posts={[]} tabValue="media-pics" />
+        <PostTab posts={getMediaPosts()} tabValue="media-pics" />
       </TabsContent>
     </Tabs>
   );

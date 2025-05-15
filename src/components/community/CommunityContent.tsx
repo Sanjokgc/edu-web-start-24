@@ -173,6 +173,25 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
     });
   };
 
+  const filterPostsByTab = (tabValue: string) => {
+    // For now return all posts for all tabs for visibility
+    if (tabValue === "all-posts") {
+      return posts;
+    } else if (tabValue === "trending-post") {
+      // Show posts with most votes/comments as trending
+      return [...posts].sort((a, b) => 
+        (b.upvotes + b.comments.length) - (a.upvotes + a.comments.length)
+      );
+    } else if (tabValue === "discussions") {
+      // Show posts with most comments
+      return [...posts].sort((a, b) => b.comments.length - a.comments.length);
+    } else if (tabValue === "media-pics") {
+      // For demo purposes, just return posts
+      return posts;
+    }
+    return posts;
+  };
+
   return (
     <div className="flex-1">
       <div className="mb-4">
@@ -187,18 +206,16 @@ export const CommunityContent: React.FC<CommunityContentProps> = ({
         setActiveTab={setActiveTab}
       />
       
-      {activeTab === "all-posts" && posts.length > 0 && (
-        <div className="space-y-6 mt-4">
-          {posts.map((post) => (
-            <Post 
-              key={post.id}
-              post={post}
-              onVote={handleVote}
-              onAddComment={addComment}
-            />
-          ))}
-        </div>
-      )}
+      <div className="space-y-6 mt-4">
+        {filterPostsByTab(activeTab).map((post) => (
+          <Post 
+            key={post.id}
+            post={post}
+            onVote={handleVote}
+            onAddComment={addComment}
+          />
+        ))}
+      </div>
     </div>
   );
 };
