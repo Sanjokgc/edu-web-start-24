@@ -7,7 +7,7 @@ type AuthRouteProps = {
   children: React.ReactNode;
 };
 
-const AuthRoute = ({ children }: AuthRouteProps) => {
+const AuthRoute: React.FC<AuthRouteProps> = ({ children }) => {
   const { isLoaded, isSignedIn } = useAuth();
   
   if (!isLoaded) {
