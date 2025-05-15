@@ -4,10 +4,11 @@ import { useAuth, useUser } from "@clerk/clerk-react";
 import { formatDistanceToNow } from "date-fns";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { ArrowUp, ArrowDown, MessageSquare } from "lucide-react";
-import { Post as PostType, addComment, addVote } from "@/services/postsService";
+import { MessageSquare } from "lucide-react";
+import { Post as PostType } from "@/services/postsService";
+import { PostVoteButtons } from "./PostVoteButtons";
+import { PostCommentsSection } from "./PostCommentsSection";
+import { usePostActions } from "@/hooks/usePostActions";
 
 interface PostProps {
   post: PostType;
@@ -16,109 +17,19 @@ interface PostProps {
 }
 
 export const Post = ({ post, onVote, onAddComment }: PostProps) => {
-  const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { isSignedIn } = useAuth();
   const { user } = useUser();
-  const { toast } = useToast();
   
   const hasUserUpvoted = user && post.upvotedBy.includes(user.id);
   const hasUserDownvoted = user && post.downvotedBy.includes(user.id);
 
-  const handleUpvote = async () => {
-    if (!isSignedIn || !user) {
-      toast({
-        title: "Authentication Required",
-        description: "You need to sign in to vote on posts.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      await addVote(post.id, user.id, "upvote");
-      // The real-time subscription will update the UI
-      if (onVote) onVote(post.id, "upvote");
-    } catch (error) {
-      console.error("Error upvoting post:", error);
-      toast({
-        title: "Error",
-        description: "Failed to upvote post. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDownvote = async () => {
-    if (!isSignedIn || !user) {
-      toast({
-        title: "Authentication Required",
-        description: "You need to sign in to vote on posts.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      await addVote(post.id, user.id, "downvote");
-      // The real-time subscription will update the UI
-      if (onVote) onVote(post.id, "downvote");
-    } catch (error) {
-      console.error("Error downvoting post:", error);
-      toast({
-        title: "Error",
-        description: "Failed to downvote post. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleSubmitComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!isSignedIn || !user) {
-      toast({
-        title: "Authentication Required",
-        description: "You need to sign in to comment.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (!commentText.trim()) {
-      toast({
-        title: "Empty Comment",
-        description: "Please write something before submitting.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-    
-    try {
-      const newComment = await addComment(post.id, {
-        content: commentText,
-        author: user.firstName || user.username || "Anonymous",
-        authorId: user.id,
-      });
-      
-      // The real-time subscription will update the UI
-      if (onAddComment) onAddComment(post.id, newComment);
-      
-      setCommentText("");
-    } catch (error) {
-      console.error("Error adding comment:", error);
-      toast({
-        title: "Error",
-        description: "Failed to add comment. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const { 
+    isSubmittingComment,
+    handleUpvote,
+    handleDownvote,
+    handleSubmitComment
+  } = usePostActions(post.id, onVote);
 
   const formattedDate = formatDistanceToNow(new Date(post.createdAt), { addSuffix: true });
 
@@ -141,26 +52,15 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
       </CardContent>
       <CardFooter className="flex flex-col items-start space-y-4 px-5 pb-5">
         <div className="w-full flex items-center">
-          <div className="flex space-x-2 mr-4">
-            <Button 
-              onClick={handleUpvote} 
-              variant="ghost" 
-              size="sm"
-              className={`flex items-center ${hasUserUpvoted ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'}`}
-            >
-              <ArrowUp className="mr-1" size={16} />
-              {post.upvotes}
-            </Button>
-            <Button 
-              onClick={handleDownvote} 
-              variant="ghost" 
-              size="sm"
-              className={`flex items-center ${hasUserDownvoted ? 'text-red-600' : 'text-gray-700 hover:text-red-600'}`}
-            >
-              <ArrowDown className="mr-1" size={16} />
-              {post.downvotes}
-            </Button>
-          </div>
+          <PostVoteButtons
+            postId={post.id}
+            upvotes={post.upvotes}
+            downvotes={post.downvotes}
+            hasUserUpvoted={hasUserUpvoted}
+            hasUserDownvoted={hasUserDownvoted}
+            onUpvote={handleUpvote}
+            onDownvote={handleDownvote}
+          />
           <Button 
             variant="ghost" 
             className="flex items-center text-gray-700 hover:text-blue-600"
@@ -172,41 +72,26 @@ export const Post = ({ post, onVote, onAddComment }: PostProps) => {
         </div>
         
         {showComments && (
-          <div className="w-full space-y-4">
-            <form onSubmit={handleSubmitComment} className="space-y-2">
-              <Textarea
-                placeholder="Write a comment..."
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                className="resize-none border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                rows={2}
-              />
-              <Button 
-                type="submit" 
-                size="sm" 
-                className="bg-blue-600 text-white hover:bg-blue-700"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Posting..." : "Post Comment"}
-              </Button>
-            </form>
-            
-            <div className="space-y-3 mt-4">
-              {post.comments.length > 0 ? (
-                post.comments.map((comment) => (
-                  <div key={comment.id} className="bg-gray-50 p-3 rounded-md">
-                    <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
-                      <span className="font-medium">{comment.author}</span>
-                      <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>
-                    </div>
-                    <p className="text-black">{comment.content}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 text-sm italic">No comments yet. Be the first to comment!</p>
-              )}
-            </div>
-          </div>
+          <PostCommentsSection
+            postId={post.id}
+            comments={post.comments}
+            isSignedIn={isSignedIn}
+            isSubmitting={isSubmittingComment}
+            onSubmitComment={(commentText) => {
+              handleSubmitComment(commentText);
+              if (onAddComment && user) {
+                // Optimistic UI update - the real update will come from the subscription
+                const optimisticComment = {
+                  id: `temp-${Date.now()}`,
+                  content: commentText,
+                  author: user.firstName || user.username || "Anonymous",
+                  authorId: user.id,
+                  createdAt: new Date().toISOString(),
+                };
+                onAddComment(post.id, optimisticComment);
+              }
+            }}
+          />
         )}
       </CardFooter>
     </Card>
