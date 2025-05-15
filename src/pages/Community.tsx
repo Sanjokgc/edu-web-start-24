@@ -13,13 +13,34 @@ import TopicDialog from "@/components/community/TopicDialog";
 import CreateGroupDialog from "@/components/community/CreateGroupDialog";
 import VideoModal from "@/components/community/VideoModal";
 
+interface Comment {
+  id: string;
+  content: string;
+  author: string;
+  authorId: string;
+  createdAt: string;
+}
+
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  authorId: string;
+  createdAt: string;
+  upvotes: number;
+  downvotes: number;
+  comments: Comment[];
+}
+
 const Community = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("all-posts");
   const [isTopicDialogOpen, setIsTopicDialogOpen] = useState(false);
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
   
   const [topics, setTopics] = useState([
     { id: 1, name: "Study Abroad Guide", icon: "graduation-cap", color: "amber" },
@@ -32,11 +53,40 @@ const Community = () => {
   
   // Load posts from localStorage on component mount
   useEffect(() => {
-    const storedPosts = localStorage.getItem("communityPosts");
-    if (storedPosts) {
-      setPosts(JSON.parse(storedPosts));
-    }
-  }, []);
+    const fetchPosts = () => {
+      setLoading(true);
+      try {
+        const storedPosts = localStorage.getItem("communityPosts");
+        if (storedPosts) {
+          setPosts(JSON.parse(storedPosts));
+        }
+      } catch (error) {
+        console.error("Failed to load posts:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load community posts.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchPosts();
+    
+    // Set up event listener for storage changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "communityPosts") {
+        fetchPosts();
+      }
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+    
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [toast]);
 
   return (
     <div className="min-h-screen flex flex-col">
