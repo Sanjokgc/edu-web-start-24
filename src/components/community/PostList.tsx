@@ -14,6 +14,8 @@ type PostType = {
   upvotes: number;
   downvotes: number;
   comments: CommentType[];
+  upvotedBy?: string[];
+  downvotedBy?: string[];
 };
 
 type CommentType = {
@@ -30,13 +32,21 @@ export const PostList = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // In a real app, this would fetch posts from an API
-    // For now, we'll load from localStorage
+    // Load posts from localStorage
     const loadPosts = () => {
       try {
         const savedPosts = localStorage.getItem("communityPosts");
         const parsedPosts = savedPosts ? JSON.parse(savedPosts) : [];
-        setPosts(parsedPosts);
+        
+        // Normalize posts to ensure all have required fields
+        const normalizedPosts = parsedPosts.map((post: PostType) => ({
+          ...post,
+          upvotedBy: post.upvotedBy || [],
+          downvotedBy: post.downvotedBy || [],
+          comments: post.comments || []
+        }));
+        
+        setPosts(normalizedPosts);
       } catch (error) {
         toast({
           title: "Error",
@@ -52,6 +62,18 @@ export const PostList = () => {
     setTimeout(() => {
       loadPosts();
     }, 800);
+    
+    // Listen for storage events (when other users/tabs update posts)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "communityPosts") {
+        loadPosts();
+      }
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, [toast]);
 
   const handleVote = (postId: string, voteType: "upvote" | "downvote") => {
